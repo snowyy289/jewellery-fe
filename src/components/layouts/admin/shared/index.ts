@@ -1,0 +1,7 @@
+/**
+ * Shared Admin UI Components
+ */
+export { default as AdminPageHeader } from "./AdminPageHeader";
+export { default as AdminCard } from "./AdminCard";
+export { default as AdminStatsCard } from "./AdminStatsCard";
+export { default as AdminEmptyState } from "./AdminEmptyState";

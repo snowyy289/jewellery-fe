@@ -1,0 +1,63 @@
+"use client";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { AdminPageHeader } from "@/components/layouts/admin/shared";
+import { articleService, articleCategoryService } from "@/services/admin/articleService";
+import { Article, ArticleCategory } from "@/types/article";
+import FormArticleEdit from "./FormArticleEdit";
+
+export default function EditArticlePage() {
+    const params = useParams();
+    const [isFetching, setIsFetching] = useState(true);
+    const [article, setArticle] = useState<Article | null>(null);
+    const [categories, setCategories] = useState<ArticleCategory[]>([]);
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const [articleRes, categoriesRes] = await Promise.all([
+                articleService.getArticleDetail(params.id as string),
+                articleCategoryService.getCategories({ status: 'active' })
+            ]);
+            
+            if (articleRes.code === "success" && articleRes.article) {
+                setArticle(articleRes.article);
+            }
+            if (categoriesRes.code === "success") {
+                setCategories(categoriesRes.categories);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsFetching(false);
+        }
+    };
+
+    if (isFetching) return (
+        <div className="flex items-center justify-center h-[60vh]">
+            <div className="flex flex-col items-center gap-4">
+                <div
+                    className="w-12 h-12 rounded-full border-2 border-t-transparent animate-spin"
+                    style={{ borderColor: "rgba(99,102,241,0.2)", borderTopColor: "#6366f1" }}
+                />
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Đang tải dữ liệu...</p>
+            </div>
+        </div>
+    );
+
+    if (!article) return <div>Bài viết không tồn tại</div>;
+
+    return (
+        <div className="w-full space-y-6 pb-10">
+            <AdminPageHeader
+                title="Chỉnh sửa bài viết"
+                subTitle={`Cập nhật: ${article.title}`}
+                backHref="/admin/articles"
+            />
+            <FormArticleEdit article={article} categories={categories} />
+        </div>
+    );
+}
