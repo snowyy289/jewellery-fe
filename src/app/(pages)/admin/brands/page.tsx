@@ -2,20 +2,20 @@
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Package, Edit2, Trash2, Plus } from "lucide-react";
+import { Tags, Edit2, Trash2, Plus } from "lucide-react";
 import Image from "next/image";
 import Button from "@/components/button/Button";
 import { AdminPageHeader, AdminCard } from "@/components/layouts/admin/shared";
-import { productService } from "@/services/admin/productService";
-import { Product } from "@/types/product";
+import { brandService } from "@/services/admin/brandService";
+import { Brand } from "@/types/brand";
 import { toast } from "sonner";
 import Search from "@/components/search/Search";
 import FilterStatus from "@/components/filter/FilterStatus";
 import Pagination from "@/components/pagination/Pagination";
 
-function ProductsContent() {
+function BrandsContent() {
     const searchParams = useSearchParams();
-    const [products, setProducts] = useState<Product[]>([]);
+    const [brands, setBrands] = useState<Brand[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [pagination, setPagination] = useState({
         currentPage: 1,
@@ -24,15 +24,15 @@ function ProductsContent() {
 
     useEffect(() => {
         const params = Object.fromEntries(searchParams.entries());
-        fetchProducts(params);
+        fetchBrands(params);
     }, [searchParams]);
 
-    const fetchProducts = async (params: Record<string, string | number | boolean> = {}) => {
+    const fetchBrands = async (params: Record<string, string | number | boolean> = {}) => {
         setIsLoading(true);
         try {
-            const res = await productService.getProducts(params);
+            const res = await brandService.getBrands(params);
             if (res.code === "success") {
-                setProducts(res.products);
+                setBrands(res.brands);
                 if (res.pagination) {
                     setPagination({
                         currentPage: res.pagination.currentPage,
@@ -41,20 +41,20 @@ function ProductsContent() {
                 }
             }
         } catch {
-            console.error("Fetch products error");
+            console.error("Fetch brands error");
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (confirm("Xóa sản phẩm này sẽ ẩn nó khỏi hệ thống. Bạn chắc chắn chứ?")) {
+        if (confirm("Xóa thương hiệu này có thể ảnh hưởng đến các sản phẩm liên quan. Bạn chắc chắn chứ?")) {
             try {
-                const res = await productService.deleteProduct(id);
+                const res = await brandService.deleteBrand(id);
                 if (res.code === "success") {
                     toast.success("Xóa thành công!");
                     const params = Object.fromEntries(searchParams.entries());
-                    fetchProducts(params);
+                    fetchBrands(params);
                 } else {
                     toast.error(res.message);
                 }
@@ -64,20 +64,16 @@ function ProductsContent() {
         }
     };
 
-    const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-    };
-
     return (
         <div className="w-full space-y-6 pb-10">
             <AdminPageHeader
-                title="Quản lý sản phẩm"
-                subTitle="Danh sách tất cả sản phẩm trang sức trong hệ thống"
+                title="Thương hiệu sản phẩm"
+                subTitle="Quản lý các hãng trang sức của hệ thống"
                 actions={
                     <div className="flex items-center gap-3">
-                        <Link href="/admin/products/create">
+                        <Link href="/admin/brands/create">
                             <Button size="sm" icon={<Plus className="w-4 h-4" />}>
-                                Thêm sản phẩm
+                                Thêm mới
                             </Button>
                         </Link>
                     </div>
@@ -89,16 +85,16 @@ function ProductsContent() {
                 <Search />
             </div>
 
-            <AdminCard noPadding title="Tất cả sản phẩm" subTitle={`${products.length} sản phẩm hiện có`}>
+            <AdminCard noPadding title="Tất cả thương hiệu" subTitle={`${brands.length} thương hiệu hiện có`}>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-slate-50/50 border-b border-slate-100">
+                                <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Thương hiệu</th>
                                 <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sản phẩm</th>
-                                <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Giá</th>
-                                <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Danh mục</th>
-                                <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kho</th>
+                                <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Vị trí</th>
                                 <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Trạng thái</th>
+                                <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tạo bởi</th>
                                 <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Cập nhật</th>
                                 <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Thao tác</th>
                             </tr>
@@ -113,14 +109,14 @@ function ProductsContent() {
                                         </div>
                                     </td>
                                 </tr>
-                            ) : products.length === 0 ? (
+                            ) : brands.length === 0 ? (
                                 <tr>
                                     <td colSpan={7} className="px-8 py-20 text-center text-slate-400 italic font-medium">
-                                        Chưa có sản phẩm nào được tạo.
+                                        Chưa có thương hiệu nào được tạo.
                                     </td>
                                 </tr>
                             ) : (
-                                products.map((item) => (
+                                brands.map((item) => (
                                     <tr key={item._id} className="group hover:bg-indigo-50/30 transition-all duration-300">
                                         <td className="px-8 py-4">
                                             <div className="flex items-center gap-4">
@@ -135,7 +131,7 @@ function ProductsContent() {
                                                         />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center bg-slate-50 border border-slate-100">
-                                                            <Package className="w-5 h-5 text-slate-300" />
+                                                            <Tags className="w-5 h-5 text-slate-300" />
                                                         </div>
                                                     )}
                                                 </div>
@@ -143,51 +139,18 @@ function ProductsContent() {
                                                     <p className="text-sm font-bold text-slate-800 transition-colors group-hover:text-indigo-600">
                                                         {item.title}
                                                     </p>
-                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">
-                                                        SKU: {item.sku}
-                                                    </p>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-4">
-                                            <div className="flex flex-col gap-1">
-                                                {item.discountPercentage && item.discountPercentage > 0 ? (
-                                                    <>
-                                                        <span className="text-sm font-black text-emerald-600">
-                                                            {formatPrice(item.discountPrice || item.price)}
-                                                        </span>
-                                                        <span className="text-[10px] text-slate-400 line-through">
-                                                            {formatPrice(item.price)}
-                                                        </span>
-                                                        <span className="text-[9px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded w-fit">
-                                                            -{item.discountPercentage}%
-                                                        </span>
-                                                    </>
-                                                ) : (
-                                                    <span className="text-sm font-black text-slate-700">
-                                                        {formatPrice(item.price)}
-                                                    </span>
-                                                )}
                                             </div>
                                         </td>
                                         <td className="px-8 py-4">
                                             <span className="text-xs font-bold text-slate-500">
-                                                {item.category_id && typeof item.category_id === 'object' ? item.category_id.title : (
-                                                    <span className="text-slate-300">—</span>
-                                                )}
+                                                {item.productCount || 0} SP
                                             </span>
                                         </td>
                                         <td className="px-8 py-4">
-                                            {item.outOfStock || item.stock === 0 ? (
-                                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wider bg-rose-50 text-rose-600 border-rose-100">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                                                    Hết hàng
-                                                </div>
-                                            ) : (
-                                                <span className="text-xs font-black text-slate-700 tabular-nums">
-                                                    {item.stock} sản phẩm
-                                                </span>
-                                            )}
+                                            <span className="text-xs font-black text-slate-500 tabular-nums">
+                                                {(item.position ?? 0).toString().padStart(2, '0')}
+                                            </span>
                                         </td>
                                         <td className="px-8 py-4">
                                             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wider ${
@@ -197,6 +160,20 @@ function ProductsContent() {
                                             }`}>
                                                 <span className={`w-1.5 h-1.5 rounded-full ${item.status === 'active' ? 'bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]' : 'bg-slate-400'}`} />
                                                 {item.status === 'active' ? 'Hoạt động' : 'Dừng'}
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-4">
+                                            <div className="flex flex-col">
+                                                <span className="text-xs font-bold text-slate-700">{item.createBy?.fullName || '—'}</span>
+                                                <span className="text-[10px] text-slate-400 italic">
+                                                    {item.createdAt ? new Date(item.createdAt).toLocaleString('vi-VN', {
+                                                        day: '2-digit',
+                                                        month: '2-digit',
+                                                        year: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    }) : '—'}
+                                                </span>
                                             </div>
                                         </td>
                                         <td className="px-8 py-4">
@@ -215,7 +192,7 @@ function ProductsContent() {
                                         </td>
                                         <td className="px-8 py-4">
                                             <div className="flex items-center justify-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
-                                                <Link href={`/admin/products/edit/${item._id}`}>
+                                                <Link href={`/admin/brands/edit/${item._id}`}>
                                                     <button className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:bg-white hover:text-indigo-600 hover:shadow-md border border-transparent hover:border-slate-100 transition-all">
                                                         <Edit2 className="w-4 h-4" />
                                                     </button>
@@ -237,7 +214,7 @@ function ProductsContent() {
 
                 <div className="px-8 py-4 bg-slate-50/30 border-t border-slate-100 flex items-center justify-between">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        Tổng cộng: {products.length} sản phẩm
+                        Tổng cộng: {brands.length} thương hiệu
                     </p>
                 </div>
 
@@ -250,10 +227,10 @@ function ProductsContent() {
     );
 }
 
-export default function ProductsPage() {
+export default function BrandsPage() {
     return (
         <Suspense fallback={<div>Đang tải...</div>}>
-            <ProductsContent />
+            <BrandsContent />
         </Suspense>
     );
 }

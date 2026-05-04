@@ -2,23 +2,29 @@
 import { useEffect, useState } from "react";
 import { AdminPageHeader } from "@/components/layouts/admin/shared";
 import { categoryService } from "@/services/admin/categoryService";
+import { brandService } from "@/services/admin/brandService";
 import { Category } from "@/types/category";
+import { Brand } from "@/types/brand";
 import FormProductCreate from "./FormProductCreate";
 
 export default function CreateProductPage() {
     const [isFetching, setIsFetching] = useState(true);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [brands, setBrands] = useState<Brand[]>([]);
 
     useEffect(() => {
-        fetchCategories();
+        fetchData();
     }, []);
 
-    const fetchCategories = async () => {
+    const fetchData = async () => {
         try {
-            const res = await categoryService.getCategories({ status: "active" });
-            if (res.code === "success") {
-                setCategories(res.categories);
-            }
+            const [catRes, brandRes] = await Promise.all([
+                categoryService.getCategories({ status: "active" }),
+                brandService.getBrands({ status: "active" })
+            ]);
+            
+            if (catRes.code === "success") setCategories(catRes.categories);
+            if (brandRes.code === "success") setBrands(brandRes.brands);
         } catch (error) {
             console.error(error);
         } finally {
@@ -46,7 +52,7 @@ export default function CreateProductPage() {
                 backHref="/admin/products"
             />
 
-            <FormProductCreate categories={categories} />
+            <FormProductCreate categories={categories} brands={brands} />
         </div>
     );
 }

@@ -59,7 +59,7 @@ export default function AuthLeftPanel({ children }: AuthLeftPanelProps) {
                         <Sparkles className="w-5 h-5 text-white" />
                     </div>
                     <span className="text-white text-xl font-black tracking-tight">
-                        Cosmetic<span style={{ color: "#818cf8" }}>.</span>Eco
+                        Jewelry<span style={{ color: "#818cf8" }}>.</span>Eco
                     </span>
                 </Link>
             </div>
@@ -81,7 +81,7 @@ export default function AuthLeftPanel({ children }: AuthLeftPanelProps) {
                         style={{ background: "#6366f1", boxShadow: "0 0 6px #6366f1" }}
                     />
                     <p className="text-[10px] font-medium" style={{ color: "rgba(100,116,139,0.7)" }}>
-                        Cosmetic Eco © 2026 · Secure Portal
+                        Jewelry Eco © 2026 · Secure Portal
                     </p>
                 </div>
             </div>

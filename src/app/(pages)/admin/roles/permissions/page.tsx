@@ -47,11 +47,23 @@ export default function PermissionsPage() {
 
     const handleCheckboxChange = (roleId: string, permissionValue: string) => {
         setActivePermissions(prev => {
-            const current = [...prev[roleId]];
+            const current = prev[roleId] ? [...prev[roleId]] : [];
             if (current.includes(permissionValue)) {
                 return { ...prev, [roleId]: current.filter(p => p !== permissionValue) };
             } else {
                 return { ...prev, [roleId]: [...current, permissionValue] };
+            }
+        });
+    };
+
+    const handleSelectAllForRole = (roleId: string) => {
+        setActivePermissions(prev => {
+            const currentRolePerms = prev[roleId] || [];
+            if (currentRolePerms.length === permissions.length && permissions.length > 0) {
+                return { ...prev, [roleId]: [] };
+            } else {
+                const allPermValues = permissions.map(p => p.value);
+                return { ...prev, [roleId]: allPermValues };
             }
         });
     };
@@ -115,14 +127,30 @@ export default function PermissionsPage() {
                                 <th className="sticky left-0 z-20 bg-slate-50/50 px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-r border-slate-100 min-w-[280px]">
                                     Tính năng / Mô tả
                                 </th>
-                                {roles.map(role => (
-                                    <th key={role._id} className="px-6 py-5 text-center">
-                                        <div className="flex flex-col items-center gap-1">
-                                            <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest leading-none">Role</span>
-                                            <span className="text-xs font-bold text-slate-700 whitespace-nowrap">{role.name}</span>
-                                        </div>
-                                    </th>
-                                ))}
+                                {roles.map(role => {
+                                    const isAllSelected = activePermissions[role._id]?.length === permissions.length && permissions.length > 0;
+                                    return (
+                                        <th key={role._id} className="px-6 py-5 text-center">
+                                            <div className="flex flex-col items-center gap-2">
+                                                <div className="flex flex-col items-center gap-1">
+                                                    <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest leading-none">Role</span>
+                                                    <span className="text-xs font-bold text-slate-700 whitespace-nowrap">{role.name}</span>
+                                                </div>
+                                                <button 
+                                                    onClick={() => handleSelectAllForRole(role._id)}
+                                                    className={`text-[10px] font-bold px-3 py-1.5 rounded-md transition-all duration-300 border ${
+                                                        isAllSelected 
+                                                            ? "bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100" 
+                                                            : "bg-white border-slate-200 text-slate-500 hover:border-indigo-300 hover:text-indigo-600 shadow-sm"
+                                                    }`}
+                                                    title={isAllSelected ? "Bỏ chọn tất cả quyền" : "Chọn tất cả quyền"}
+                                                >
+                                                    {isAllSelected ? "Bỏ chọn All" : "Chọn All"}
+                                                </button>
+                                            </div>
+                                        </th>
+                                    );
+                                })}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">

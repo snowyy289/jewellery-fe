@@ -13,6 +13,7 @@ export interface Product {
   outOfStock?: boolean; // Calculated field
   sku: string;
   category_id: string | { _id: string, title: string, slug?: string };
+  brand_id?: string | { _id: string, title: string };
   thumbnail?: string;
   images?: string[];
   featured: boolean;
@@ -44,6 +45,7 @@ export interface ProductCreateRequest {
   stock: number;
   sku: string;
   category_id: string;
+  brand_id: string;
   thumbnail?: File;
   images?: File[];
   featured?: boolean;

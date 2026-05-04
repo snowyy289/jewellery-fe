@@ -10,13 +10,15 @@ import RichTextEditor from "@/components/input/RichTextEditor";
 import { AdminCard } from "@/components/layouts/admin/shared";
 import { productService } from "@/services/admin/productService";
 import { Category } from "@/types/category";
+import { Brand } from "@/types/brand";
 import { toast } from "sonner";
 
 interface FormProductCreateProps {
     categories: Category[];
+    brands: Brand[];
 }
 
-export default function FormProductCreate({ categories }: FormProductCreateProps) {
+export default function FormProductCreate({ categories, brands }: FormProductCreateProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [previewThumbnail, setPreviewThumbnail] = useState<string | null>(null);
     const [previewImages, setPreviewImages] = useState<string[]>([]);
@@ -199,6 +201,20 @@ export default function FormProductCreate({ categories }: FormProductCreateProps
                             {categories.map(cat => (
                                 <option key={cat._id} value={cat._id}>
                                     {cat.title}
+                                </option>
+                            ))}
+                        </Select>
+
+                        <Select 
+                            label="Thương hiệu"
+                            name="brand_id"
+                            icon={<Tag className="w-4 h-4" />}
+                            required
+                        >
+                            <option value="">-- Chọn thương hiệu --</option>
+                            {brands.map(brand => (
+                                <option key={brand._id} value={brand._id}>
+                                    {brand.title}
                                 </option>
                             ))}
                         </Select>

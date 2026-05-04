@@ -6,7 +6,7 @@ import AuthFormCard from "@/components/layouts/admin/auth/AuthFormCard";
 import { ShieldEllipsis } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Xác thực OTP | Cosmetic Eco",
+    title: "Xác thực OTP | Jewelry Eco",
     description: "Xác thực mã bảo mật hệ thống",
 };
 

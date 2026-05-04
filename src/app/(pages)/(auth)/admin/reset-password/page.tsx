@@ -6,7 +6,7 @@ import AuthFormCard from "@/components/layouts/admin/auth/AuthFormCard";
 import { Lock, Shield } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Đặt lại mật khẩu | Cosmetic Eco",
+    title: "Đặt lại mật khẩu | Jewelry Eco",
     description: "Cài đặt mật khẩu mới cho tài khoản",
 };
 

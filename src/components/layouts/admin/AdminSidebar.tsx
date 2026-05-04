@@ -19,7 +19,8 @@ import {
   Image,
   FileText,
   FolderOpen,
-  Settings
+  Settings,
+  Tags
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -61,6 +62,12 @@ export default function AdminSidebar({ isCollapsed }: AdminSidebarProps) {
       label: "Danh Mục SP", 
       icon: Layers, 
       desc: "Phân loại sản phẩm" 
+    },
+    { 
+      href: "/admin/brands", 
+      label: "Thương Hiệu", 
+      icon: Tags, 
+      desc: "Quản lý hãng/brand" 
     },
     { 
       href: "/admin/products", 
@@ -150,7 +157,7 @@ export default function AdminSidebar({ isCollapsed }: AdminSidebarProps) {
           {!isCollapsed && (
             <div className="whitespace-nowrap overflow-hidden transition-all duration-300">
               <div className="text-xl font-black tracking-tight text-white leading-none">
-                Cosmetic<span style={{ color: "#818cf8" }}>.</span>Eco
+                Jewelry<span style={{ color: "#818cf8" }}>.</span>Eco
               </div>
               <div className="text-[10px] font-medium mt-0.5" style={{ color: "rgba(129,140,248,0.7)" }}>
                 ADMIN PANEL
@@ -340,7 +347,7 @@ export default function AdminSidebar({ isCollapsed }: AdminSidebarProps) {
           <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#6366f1", boxShadow: "0 0 6px #6366f1" }} />
           {!isCollapsed && (
             <p className="text-[10px] font-medium whitespace-nowrap overflow-hidden" style={{ color: "rgba(100,116,139,0.7)" }}>
-              Cosmetic Eco © 2026 · v1.0
+              Jewelry Eco © 2026 · v1.0
             </p>
           )}
         </div>

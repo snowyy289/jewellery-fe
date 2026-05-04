@@ -4,8 +4,10 @@ import { useParams } from "next/navigation";
 import { AdminPageHeader } from "@/components/layouts/admin/shared";
 import { productService } from "@/services/admin/productService";
 import { categoryService } from "@/services/admin/categoryService";
+import { brandService } from "@/services/admin/brandService";
 import { Product } from "@/types/product";
 import { Category } from "@/types/category";
+import { Brand } from "@/types/brand";
 import FormProductEdit from "./FormProductEdit";
 import { toast } from "sonner";
 
@@ -15,6 +17,7 @@ export default function EditProductPage() {
     const [isFetching, setIsFetching] = useState(true);
     const [product, setProduct] = useState<Product | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [brands, setBrands] = useState<Brand[]>([]);
 
     useEffect(() => {
         fetchData();
@@ -22,9 +25,10 @@ export default function EditProductPage() {
 
     const fetchData = async () => {
         try {
-            const [productRes, categoriesRes] = await Promise.all([
+            const [productRes, categoriesRes, brandsRes] = await Promise.all([
                 productService.getProductDetail(id),
-                categoryService.getCategories({ status: "active" })
+                categoryService.getCategories({ status: "active" }),
+                brandService.getBrands({ status: "active" })
             ]);
 
             if (productRes.code === "success") {
@@ -35,6 +39,10 @@ export default function EditProductPage() {
 
             if (categoriesRes.code === "success") {
                 setCategories(categoriesRes.categories);
+            }
+
+            if (brandsRes.code === "success") {
+                setBrands(brandsRes.brands);
             }
         } catch (error) {
             console.error(error);
@@ -73,7 +81,7 @@ export default function EditProductPage() {
                 backHref="/admin/products"
             />
 
-            <FormProductEdit product={product} id={id} categories={categories} />
+            <FormProductEdit product={product} id={id} categories={categories} brands={brands} />
         </div>
     );
 }

@@ -6,7 +6,7 @@ import AuthFormCard from "@/components/layouts/admin/auth/AuthFormCard";
 import { KeyRound, Mail } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Quên mật khẩu | Cosmetic Eco",
+    title: "Quên mật khẩu | Jewelry Eco",
     description: "Khôi phục quyền truy cập hệ thống",
 };
 

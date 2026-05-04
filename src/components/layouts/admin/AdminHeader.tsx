@@ -196,7 +196,7 @@ export default function AdminHeader({ isSidebarCollapsed, onToggleSidebar }: Adm
                             {/* User info header */}
                             <div className="px-4 py-3 border-b border-slate-100" style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.04), rgba(129,140,248,0.02))" }}>
                                 <p className="text-xs font-bold text-slate-800">{user?.fullName || "Admin User"}</p>
-                                <p className="text-[10px] text-slate-400 mt-0.5">{user?.email || "admin@cosmetic.eco"}</p>
+                                <p className="text-[10px] text-slate-400 mt-0.5">{user?.email || "admin@jewelry.eco"}</p>
                             </div>
 
                             <div className="py-1.5">

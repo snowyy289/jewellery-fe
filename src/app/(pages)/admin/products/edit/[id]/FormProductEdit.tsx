@@ -11,15 +11,17 @@ import { AdminCard } from "@/components/layouts/admin/shared";
 import { productService } from "@/services/admin/productService";
 import { Product } from "@/types/product";
 import { Category } from "@/types/category";
+import { Brand } from "@/types/brand";
 import { toast } from "sonner";
 
 interface FormProductEditProps {
     product: Product | null;
     id: string;
     categories: Category[];
+    brands: Brand[];
 }
 
-export default function FormProductEdit({ product, id, categories }: FormProductEditProps) {
+export default function FormProductEdit({ product, id, categories, brands }: FormProductEditProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [previewThumbnail, setPreviewThumbnail] = useState<string | null>(product?.thumbnail || null);
     const [previewImages, setPreviewImages] = useState<string[]>(product?.images || []);
@@ -116,6 +118,7 @@ export default function FormProductEdit({ product, id, categories }: FormProduct
     };
 
     const categoryId = typeof product?.category_id === 'object' ? product.category_id._id : product?.category_id;
+    const brandId = typeof product?.brand_id === 'object' ? product.brand_id._id : product?.brand_id;
 
     return (
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -222,6 +225,21 @@ export default function FormProductEdit({ product, id, categories }: FormProduct
                             {categories.map(cat => (
                                 <option key={cat._id} value={cat._id}>
                                     {cat.title}
+                                </option>
+                            ))}
+                        </Select>
+
+                        <Select 
+                            label="Thương hiệu"
+                            name="brand_id"
+                            defaultValue={brandId}
+                            icon={<Tag className="w-4 h-4" />}
+                            required
+                        >
+                            <option value="">-- Chọn thương hiệu --</option>
+                            {brands.map(brand => (
+                                <option key={brand._id} value={brand._id}>
+                                    {brand.title}
                                 </option>
                             ))}
                         </Select>

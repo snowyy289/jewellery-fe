@@ -6,8 +6,8 @@ import AuthFormCard from "@/components/layouts/admin/auth/AuthFormCard";
 import { ShieldCheck, Star, Zap } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Đăng nhập (Admin) | Cosmetic Eco",
-    description: "Hệ thống quản trị cao cấp Cosmetic Eco",
+    title: "Đăng nhập (Admin) | Jewelry Eco",
+    description: "Hệ thống quản trị cao cấp Jewelry Eco",
 };
 
 function LoginVisual() {
@@ -40,7 +40,7 @@ function LoginVisual() {
             <p className="text-base font-medium leading-relaxed" style={{ color: "rgba(148,163,184,0.9)" }}>
                 Quản lý toàn bộ hệ thống thương mại điện tử
                 <br />
-                mỹ phẩm cao cấp của bạn
+                trang sức cao cấp của bạn
             </p>
 
             {/* Feature pills */}
@@ -102,7 +102,7 @@ export default function AdminLoginPage() {
                     </AuthFormCard>
                     <div className="mt-8 text-center flex items-center justify-center gap-2">
                         <Zap className="w-3 h-3" style={{ color: "#6366f1" }} />
-                        <p className="text-xs font-medium text-slate-400">Cosmetic Eco Admin · Secure Portal</p>
+                        <p className="text-xs font-medium text-slate-400">Jewelry Eco Admin · Secure Portal</p>
                     </div>
                 </>
             }
