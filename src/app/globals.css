@@ -1,53 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@100..900&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #fafaf9; /* Warm White / Stone 50 */
-  --foreground: #1c1917; /* Stone 900 */
+  --background: #ffffff;
+  --foreground: #1c1917;
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-sans: 'Inter', sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   
-  /* Hệ màu Trang sức Light Premium */
-  --color-primary: #fb7185; /* Rose 500 */
-  --color-primary-hover: #e11d48; /* Rose 600 */
-  --color-accent: #f59e0b; /* Amber/Gold 500 */
+  /* Hệ màu Trang sức Premium Boutique */
+  --color-primary: #1c1917; /* Deep Stone */
+  --color-accent: #d4af37; /* Metallic Gold */
+  --color-gold: #d4af37;
+  --color-cream: #fdfcf7;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   overflow-x: hidden;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Hiệu ứng nền Light Premium Glow */
-.bg-premium {
-  position: relative;
-  background: radial-gradient(circle at 50% 50%, #fff1f2 0%, #fafaf9 100%);
+.font-serif {
+  font-family: var(--font-serif);
 }
 
-.bg-premium::before {
-  content: "";
-  position: absolute;
-  top: -10%;
-  right: -10%;
-  width: 50%;
-  height: 50%;
-  background: radial-gradient(circle, rgba(251, 113, 133, 0.1), transparent 70%);
-  filter: blur(100px);
-  z-index: 0;
+.text-gold {
+  color: var(--color-gold);
 }
 
-.bg-premium::after {
-  content: "";
-  position: absolute;
-  bottom: -10%;
-  left: -10%;
-  width: 50%;
-  height: 50%;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.08), transparent 70%);
-  filter: blur(100px);
-  z-index: 0;
+.bg-cream {
+  background-color: var(--color-cream);
+}
+
+/* Luxury Dividers */
+.divider-gold {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+/* Premium Card Hover */
+.premium-card {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-card:hover {
+  transform: translateY(-8px);
+}
+
+/* Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }

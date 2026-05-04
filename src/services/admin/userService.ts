@@ -2,7 +2,7 @@ import axiosInstance from "../axiosInstance";
 import { UserResponse, SingleUserResponse } from "@/types/user";
 import { GenericResponse } from "@/types/auth";
 
-const PREFIX = "/api/admin/users";
+const PREFIX = "/admin/users";
 
 export const userService = {
     getUsers: async (params?: Record<string, string | number | boolean>) => {

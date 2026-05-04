@@ -4,12 +4,12 @@ import { GenericResponse } from "@/types/auth";
 
 export const brandService = {
     getBrands: async (params?: Record<string, string | number | boolean>) => {
-        const response = await axiosInstance.get<BrandResponse>("/api/admin/brands", { params });
+        const response = await axiosInstance.get<BrandResponse>("/admin/brands", { params });
         return response.data;
     },
 
     createBrand: async (data: FormData) => {
-        const response = await axiosInstance.post<SingleBrandResponse>("/api/admin/brands/create", data);
+        const response = await axiosInstance.post<SingleBrandResponse>("/admin/brands/create", data);
         return response.data;
     },
 

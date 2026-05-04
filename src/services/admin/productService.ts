@@ -4,17 +4,17 @@ import { GenericResponse } from "@/types/auth";
 
 export const productService = {
     getProducts: async (params?: Record<string, string | number | boolean>) => {
-        const response = await axiosInstance.get<ProductResponse>("/api/admin/products", { params });
+        const response = await axiosInstance.get<ProductResponse>("/admin/products", { params });
         return response.data;
     },
 
     getProductDetail: async (id: string) => {
-        const response = await axiosInstance.get<SingleProductResponse>(`/api/admin/products/detail/${id}`);
+        const response = await axiosInstance.get<SingleProductResponse>(`/admin/products/detail/${id}`);
         return response.data;
     },
 
     createProduct: async (data: FormData) => {
-        const response = await axiosInstance.post<GenericResponse>("/api/admin/products/create", data, {
+        const response = await axiosInstance.post<GenericResponse>("/admin/products/create", data, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -23,7 +23,7 @@ export const productService = {
     },
 
     updateProduct: async (id: string, data: FormData) => {
-        const response = await axiosInstance.patch<GenericResponse>(`/api/admin/products/edit/${id}`, data, {
+        const response = await axiosInstance.patch<GenericResponse>(`/admin/products/edit/${id}`, data, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -32,7 +32,7 @@ export const productService = {
     },
 
     deleteProduct: async (id: string) => {
-        const response = await axiosInstance.delete<GenericResponse>(`/api/admin/products/delete/${id}`);
+        const response = await axiosInstance.delete<GenericResponse>(`/admin/products/delete/${id}`);
         return response.data;
     }
 };

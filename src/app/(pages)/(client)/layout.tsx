@@ -7,11 +7,11 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-white">
       <ClientHeader />
 
       {/* Nội dung chính */}
-      <main className="flex-1 mt-20">
+      <main className="flex-1 mt-[110px] md:mt-[140px]">
         {children}
       </main>
 

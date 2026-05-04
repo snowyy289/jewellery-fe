@@ -5,6 +5,8 @@ const axiosInstance = axios.create({
   timeout: 300000, // 5 phút (300 giây) cho upload file
 });
 
+console.log("API Base URL:", process.env.NEXT_PUBLIC_API_URL);
+
 // ======================
 // REQUEST INTERCEPTOR
 // ======================

@@ -37,59 +37,59 @@ interface GenericResponse {
 
 export const articleCategoryService = {
   getCategories: async (params?: Record<string, string | number | boolean>) => {
-    const response = await axiosInstance.get<ArticleCategoryResponse>("/api/admin/article-categories", { params });
+    const response = await axiosInstance.get<ArticleCategoryResponse>("/admin/article-categories", { params });
     return response.data;
   },
 
   getCategoryDetail: async (id: string) => {
-    const response = await axiosInstance.get<SingleArticleCategoryResponse>(`/api/admin/article-categories/detail/${id}`);
+    const response = await axiosInstance.get<SingleArticleCategoryResponse>(`/admin/article-categories/detail/${id}`);
     return response.data;
   },
 
   createCategory: async (data: FormData) => {
-    const response = await axiosInstance.post<GenericResponse>("/api/admin/article-categories/create", data);
+    const response = await axiosInstance.post<GenericResponse>("/admin/article-categories/create", data);
     return response.data;
   },
 
   updateCategory: async (id: string, data: FormData) => {
-    const response = await axiosInstance.patch<GenericResponse>(`/api/admin/article-categories/edit/${id}`, data);
+    const response = await axiosInstance.patch<GenericResponse>(`/admin/article-categories/edit/${id}`, data);
     return response.data;
   },
 
   deleteCategory: async (id: string) => {
-    const response = await axiosInstance.delete<GenericResponse>(`/api/admin/article-categories/delete/${id}`);
+    const response = await axiosInstance.delete<GenericResponse>(`/admin/article-categories/delete/${id}`);
     return response.data;
   }
 };
 
 export const articleService = {
   getArticles: async (params?: Record<string, string | number | boolean>) => {
-    const response = await axiosInstance.get<ArticleResponse>("/api/admin/articles", { params });
+    const response = await axiosInstance.get<ArticleResponse>("/admin/articles", { params });
     return response.data;
   },
 
   getArticleDetail: async (id: string) => {
-    const response = await axiosInstance.get<SingleArticleResponse>(`/api/admin/articles/detail/${id}`);
+    const response = await axiosInstance.get<SingleArticleResponse>(`/admin/articles/detail/${id}`);
     return response.data;
   },
 
   createArticle: async (data: FormData) => {
-    const response = await axiosInstance.post<GenericResponse>("/api/admin/articles/create", data);
+    const response = await axiosInstance.post<GenericResponse>("/admin/articles/create", data);
     return response.data;
   },
 
   updateArticle: async (id: string, data: FormData) => {
-    const response = await axiosInstance.patch<GenericResponse>(`/api/admin/articles/edit/${id}`, data);
+    const response = await axiosInstance.patch<GenericResponse>(`/admin/articles/edit/${id}`, data);
     return response.data;
   },
 
   changeStatus: async (id: string, status: string) => {
-    const response = await axiosInstance.patch<GenericResponse>(`/api/admin/articles/change-status/${id}`, { status });
+    const response = await axiosInstance.patch<GenericResponse>(`/admin/articles/change-status/${id}`, { status });
     return response.data;
   },
 
   deleteArticle: async (id: string) => {
-    const response = await axiosInstance.delete<GenericResponse>(`/api/admin/articles/delete/${id}`);
+    const response = await axiosInstance.delete<GenericResponse>(`/admin/articles/delete/${id}`);
     return response.data;
   }
 };

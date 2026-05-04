@@ -1,7 +1,7 @@
 import axiosInstance from "../axiosInstance";
 import { Permission } from "@/types/permission";
 
-const PREFIX = "/api/admin/permissions";
+const PREFIX = "/admin/permissions";
 
 export const permissionService = {
     getPermissions: async () => {

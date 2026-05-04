@@ -4,7 +4,7 @@ import { GenericResponse } from "@/types/auth";
 
 export const stockImportService = {
     getStockImports: async (params?: Record<string, string | number | boolean>) => {
-        const response = await axiosInstance.get<StockImportResponse>("/api/admin/stock-imports", { params });
+        const response = await axiosInstance.get<StockImportResponse>("/admin/stock-imports", { params });
         return response.data;
     },
 
@@ -14,7 +14,7 @@ export const stockImportService = {
     },
 
     createStockImport: async (data: any) => {
-        const response = await axiosInstance.post<GenericResponse>("/api/admin/stock-imports/create", data);
+        const response = await axiosInstance.post<GenericResponse>("/admin/stock-imports/create", data);
         return response.data;
     },
 
