@@ -212,7 +212,7 @@ function StockImportsContent() {
                                         </td>
                                         <td className="px-8 py-4">
                                             <span className="text-sm font-bold text-slate-800">
-                                                {typeof item.supplier_id === 'object' ? item.supplier_id.name : '—'}
+                                                {item.supplier_id && typeof item.supplier_id === 'object' ? item.supplier_id.name : '—'}
                                             </span>
                                         </td>
                                         <td className="px-8 py-4">

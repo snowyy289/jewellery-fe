@@ -34,7 +34,7 @@ export default function FormBannerCreate() {
         try {
             const formData = new FormData(e.target as HTMLFormElement);
             const res = await bannerService.createBanner(formData);
-            if (res.code === "success") {
+            if (res.code === "success" || res.code === 200 || res.code === "200") {
                 toast.success("Tạo banner thành công!");
                 router.push("/admin/banners");
             } else {

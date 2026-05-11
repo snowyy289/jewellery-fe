@@ -64,7 +64,14 @@ function BannersContent() {
         }
     };
 
-    const getPositionLabel = (position: string) => {
+    const getPositionBadge = (position: string) => {
+        const styles: Record<string, string> = {
+            'home-slider': 'bg-blue-50 text-blue-600 border-blue-100',
+            'home-top': 'bg-indigo-50 text-indigo-600 border-indigo-100',
+            'home-middle': 'bg-amber-50 text-amber-600 border-amber-100',
+            'home-bottom': 'bg-purple-50 text-purple-600 border-purple-100',
+            'sidebar': 'bg-slate-50 text-slate-600 border-slate-100'
+        };
         const labels: Record<string, string> = {
             'home-slider': 'Slider Trang Chủ',
             'home-top': 'Đầu Trang Chủ',
@@ -72,7 +79,15 @@ function BannersContent() {
             'home-bottom': 'Cuối Trang Chủ',
             'sidebar': 'Sidebar'
         };
-        return labels[position] || position;
+        
+        const style = styles[position] || 'bg-slate-50 text-slate-600 border-slate-100';
+        const label = labels[position] || position;
+
+        return (
+            <div className={`inline-flex items-center px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wider ${style}`}>
+                {label}
+            </div>
+        );
     };
 
     return (
@@ -131,13 +146,13 @@ function BannersContent() {
                                     <tr key={item._id} className="group hover:bg-indigo-50/30 transition-all duration-300">
                                         <td className="px-8 py-4">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-20 h-12 rounded-xl overflow-hidden shadow-sm group-hover:shadow-indigo-100 transition-all">
+                                                <div className="w-32 h-16 rounded-xl overflow-hidden shadow-sm group-hover:shadow-indigo-100 transition-all">
                                                     {item.image ? (
                                                         <Image 
                                                             src={item.image} 
                                                             alt={item.title} 
-                                                            width={80} 
-                                                            height={48} 
+                                                            width={128} 
+                                                            height={64} 
                                                             className="w-full h-full object-cover" 
                                                         />
                                                     ) : (
@@ -159,9 +174,7 @@ function BannersContent() {
                                             </div>
                                         </td>
                                         <td className="px-8 py-4">
-                                            <span className="text-xs font-bold text-slate-600">
-                                                {getPositionLabel(item.position)}
-                                            </span>
+                                            {getPositionBadge(item.position)}
                                         </td>
                                         <td className="px-8 py-4">
                                             <span className="text-xs font-black text-slate-500 tabular-nums">

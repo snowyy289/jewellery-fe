@@ -19,8 +19,9 @@ export default function EditBannerPage() {
     const fetchBanner = async () => {
         try {
             const res = await bannerService.getBannerDetail(params.id as string);
-            if (res.code === "success" && res.banner) {
-                setBanner(res.banner);
+            const bannerData = res.banner || res.data;
+            if ((res.code === "success" || res.code === 200 || res.code === "200") && bannerData) {
+                setBanner(bannerData);
             }
         } catch (error) {
             console.error(error);

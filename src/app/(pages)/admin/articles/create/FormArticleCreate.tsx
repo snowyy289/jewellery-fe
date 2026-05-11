@@ -45,7 +45,7 @@ export default function FormArticleCreate() {
         setIsLoading(true);
         try {
             const formData = new FormData(e.target as HTMLFormElement);
-            formData.append("content", content);
+            formData.set("content", content);
             
             // Log FormData contents
             console.log("=== FORM DATA ===");
