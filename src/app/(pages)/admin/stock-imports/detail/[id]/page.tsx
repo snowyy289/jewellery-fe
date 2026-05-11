@@ -1,17 +1,17 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { AdminPageHeader, AdminCard } from "@/components/layouts/admin/shared";
 import { stockImportService } from "@/services/admin/stockImportService";
 import { StockImport } from "@/types/stock-import";
 import { toast } from "sonner";
-import { CheckCircle, XCircle, Package, Calendar, User, FileText } from "lucide-react";
+import { CheckCircle, XCircle, Calendar, FileText } from "lucide-react";
 import Button from "@/components/button/Button";
 import Image from "next/image";
 
 export default function StockImportDetailPage() {
     const params = useParams();
-    const router = useRouter();
     const id = params.id as string;
     const [isFetching, setIsFetching] = useState(true);
     const [stockImport, setStockImport] = useState<StockImport | null>(null);
@@ -24,13 +24,16 @@ export default function StockImportDetailPage() {
     const fetchStockImport = async () => {
         try {
             const res = await stockImportService.getStockImportDetail(id);
-            if (res.code === "success") {
-                setStockImport(res.stockImport);
+            console.log("📦 Stock import detail response:", res);
+            if (res.code === 200 || res.code === "success") {
+                const importData = res.stockImport || res.data;
+                console.log("✅ Setting stock import:", importData);
+                setStockImport(importData || null);
             } else {
                 toast.error(res.message);
             }
         } catch (error) {
-            console.error(error);
+            console.error("💥 Fetch stock import error:", error);
             toast.error("Lỗi khi tải dữ liệu!");
         } finally {
             setIsFetching(false);
@@ -43,7 +46,7 @@ export default function StockImportDetailPage() {
         setIsProcessing(true);
         try {
             const res = await stockImportService.confirmStockImport(id);
-            if (res.code === "success") {
+            if (res.code === 200 || res.code === "success") {
                 toast.success("Xác nhận thành công!");
                 fetchStockImport();
             } else {
@@ -62,7 +65,7 @@ export default function StockImportDetailPage() {
         setIsProcessing(true);
         try {
             const res = await stockImportService.cancelStockImport(id);
-            if (res.code === "success") {
+            if (res.code === 200 || res.code === "success") {
                 toast.success("Hủy phiếu thành công!");
                 fetchStockImport();
             } else {

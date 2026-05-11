@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Camera, Package, Activity, Save, X, DollarSign, Hash, Tag, Star, Layers } from "lucide-react";
 import Image from "next/image";
@@ -12,6 +12,7 @@ import { productService } from "@/services/admin/productService";
 import { Category } from "@/types/category";
 import { Brand } from "@/types/brand";
 import { toast } from "sonner";
+import { createTree } from "@/utils/treeHelper";
 
 interface FormProductCreateProps {
     categories: Category[];
@@ -25,9 +26,23 @@ export default function FormProductCreate({ categories, brands }: FormProductCre
     const [tags, setTags] = useState<string[]>([]);
     const [tagInput, setTagInput] = useState("");
     const [description, setDescription] = useState("");
+    const [sku, setSku] = useState("");
     const thumbnailInputRef = useRef<HTMLInputElement>(null);
     const imagesInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
+
+    // Xây cây category để hiển thị phân cấp
+    const categoryTree = createTree(categories);
+
+    // Tự động sinh SKU khi component mount
+    useEffect(() => {
+        const generateSKU = () => {
+            const timestamp = Date.now().toString().slice(-8);
+            const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+            return `JWL-${timestamp}-${random}`;
+        };
+        setSku(generateSKU());
+    }, []);
 
     const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -81,13 +96,21 @@ export default function FormProductCreate({ categories, brands }: FormProductCre
             // Add description from TinyMCE
             formData.set("description", description);
             
+            // Add SKU (vì input bị disabled nên không tự động gửi)
+            formData.set("sku", sku);
+            
+            // Đảm bảo discountPercentage là 0 nếu không nhập
+            if (!formData.get("discountPercentage") || formData.get("discountPercentage") === "") {
+                formData.set("discountPercentage", "0");
+            }
+            
             // Add tags as JSON string
             if (tags.length > 0) {
                 formData.append("tags", JSON.stringify(tags));
             }
 
             const res = await productService.createProduct(formData);
-            if (res.code === "success") {
+            if (res.code === 201) {
                 toast.success("Tạo sản phẩm thành công!");
                 router.push("/admin/products");
             } else {
@@ -144,13 +167,13 @@ export default function FormProductCreate({ categories, brands }: FormProductCre
                 <AdminCard title="Thư viện ảnh" subTitle="Ảnh bổ sung (tối đa 10)">
                     <div className="space-y-4">
                         <div 
-                            className="group relative aspect-video w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center p-6"
+                            className="group relative aspect-video w-full rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center p-4"
                             onClick={() => imagesInputRef.current?.click()}
                         >
-                            <div className="w-12 h-12 rounded-2xl bg-white shadow-md flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                <Plus className="w-6 h-6 text-slate-300 group-hover:text-indigo-500" />
+                            <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                <Plus className="w-5 h-5 text-slate-300 group-hover:text-indigo-500" />
                             </div>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">
+                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center">
                                 Thêm ảnh
                             </p>
                             <input 
@@ -198,9 +221,9 @@ export default function FormProductCreate({ categories, brands }: FormProductCre
                             required
                         >
                             <option value="">-- Chọn danh mục --</option>
-                            {categories.map(cat => (
+                            {categoryTree.map(cat => (
                                 <option key={cat._id} value={cat._id}>
-                                    {cat.title}
+                                    {"--".repeat(cat.level)} {cat.title}
                                 </option>
                             ))}
                         </Select>
@@ -263,7 +286,7 @@ export default function FormProductCreate({ categories, brands }: FormProductCre
                         <Input 
                             label="Tên sản phẩm"
                             name="title"
-                            placeholder="Ví dụ: Kem dưỡng ẩm Vitamin C..."
+                            placeholder="Ví dụ: Nhẫn vàng 18K, Dây chuyền bạc..."
                             icon={<Package className="w-4 h-4" />}
                             required
                         />
@@ -295,6 +318,7 @@ export default function FormProductCreate({ categories, brands }: FormProductCre
                                 name="discountPercentage"
                                 type="number"
                                 placeholder="0"
+                                defaultValue="0"
                                 icon={<Tag className="w-4 h-4" />}
                                 min="0"
                                 max="100"
@@ -305,10 +329,11 @@ export default function FormProductCreate({ categories, brands }: FormProductCre
                         <Input 
                             label="Mã SKU"
                             name="sku"
-                            placeholder="PROD-001"
+                            value={sku}
+                            readOnly
+                            disabled
                             icon={<Hash className="w-4 h-4" />}
-                            required
-                            hint="Mã định danh duy nhất"
+                            hint="Mã tự động sinh"
                         />
 
                         <Input 

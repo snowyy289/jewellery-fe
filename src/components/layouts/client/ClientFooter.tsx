@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Diamond, Facebook, Instagram, Twitter, MapPin, Phone, Mail } from "lucide-react";
+import Image from "next/image";
 
 export default function ClientFooter() {
     return (
@@ -76,8 +77,8 @@ export default function ClientFooter() {
                         © 2026 Jewelry Eco Luxury Boutique. All rights reserved.
                     </p>
                     <div className="flex items-center gap-6 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png" alt="Visa" className="h-4" />
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/200px-Mastercard-logo.svg.png" alt="Mastercard" className="h-5" />
+                        <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png" alt="Visa" className="h-4" />
+                        <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/200px-Mastercard-logo.svg.png" alt="Mastercard" className="h-5" />
                     </div>
                 </div>
             </div>

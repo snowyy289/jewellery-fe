@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -23,11 +24,11 @@ export default function EditArticlePage() {
                 articleCategoryService.getCategories({ status: 'active' })
             ]);
             
-            if (articleRes.code === "success" && articleRes.article) {
-                setArticle(articleRes.article);
+            if ((articleRes.code === 200 || articleRes.code === "success") && (articleRes.article || articleRes.data)) {
+                setArticle(articleRes.article || articleRes.data || null);
             }
-            if (categoriesRes.code === "success") {
-                setCategories(categoriesRes.categories);
+            if (categoriesRes.code === 200 || categoriesRes.code === "success") {
+                setCategories(categoriesRes.categories || categoriesRes.data || []);
             }
         } catch (error) {
             console.error(error);

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { GenericResponse } from "./auth";
 import { Pagination } from "./pagination";
 
@@ -20,13 +22,15 @@ export interface Supplier {
 }
 
 export interface SupplierResponse extends GenericResponse {
-  suppliers: Supplier[];
+  suppliers?: Supplier[];
+  data?: Supplier[];
   pagination?: Pagination;
   filterStatus?: any[];
 }
 
 export interface SingleSupplierResponse extends GenericResponse {
-  supplier: Supplier;
+  supplier?: Supplier;
+  data?: Supplier;
 }
 
 export interface SupplierCreateRequest {

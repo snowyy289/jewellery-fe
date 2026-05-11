@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { AdminPageHeader, AdminCard } from "@/components/layouts/admin/shared";
 import { stockExportService } from "@/services/admin/stockExportService";
 import { StockExport } from "@/types/stock-export";
@@ -11,7 +12,6 @@ import Image from "next/image";
 
 export default function StockExportDetailPage() {
     const params = useParams();
-    const router = useRouter();
     const id = params.id as string;
     const [isFetching, setIsFetching] = useState(true);
     const [stockExport, setStockExport] = useState<StockExport | null>(null);
@@ -24,13 +24,16 @@ export default function StockExportDetailPage() {
     const fetchStockExport = async () => {
         try {
             const res = await stockExportService.getStockExportDetail(id);
-            if (res.code === "success") {
-                setStockExport(res.stockExport);
+            console.log("📦 Stock export detail response:", res);
+            if (res.code === 200 || res.code === "success") {
+                const exportData = res.stockExport || res.data;
+                console.log("✅ Setting stock export:", exportData);
+                setStockExport(exportData || null);
             } else {
                 toast.error(res.message);
             }
         } catch (error) {
-            console.error(error);
+            console.error("💥 Fetch stock export error:", error);
             toast.error("Lỗi khi tải dữ liệu!");
         } finally {
             setIsFetching(false);
@@ -43,7 +46,7 @@ export default function StockExportDetailPage() {
         setIsProcessing(true);
         try {
             const res = await stockExportService.confirmStockExport(id);
-            if (res.code === "success") {
+            if (res.code === 200 || res.code === "success") {
                 toast.success("Xác nhận thành công!");
                 fetchStockExport();
             } else {
@@ -62,7 +65,7 @@ export default function StockExportDetailPage() {
         setIsProcessing(true);
         try {
             const res = await stockExportService.cancelStockExport(id);
-            if (res.code === "success") {
+            if (res.code === 200 || res.code === "success") {
                 toast.success("Hủy phiếu thành công!");
                 fetchStockExport();
             } else {

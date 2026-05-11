@@ -42,7 +42,7 @@ export default function FormCategoryCreate({ categories }: FormCategoryCreatePro
         try {
             const formData = new FormData(e.target as HTMLFormElement);
             const res = await categoryService.createCategory(formData);
-            if (res.code === "success") {
+            if (res.code === 201) {
                 toast.success("Tạo danh mục thành công!");
                 router.push("/admin/categories");
             } else {
@@ -61,7 +61,7 @@ export default function FormCategoryCreate({ categories }: FormCategoryCreatePro
             <div className="lg:col-span-1 space-y-6">
                 <AdminCard title="Hình ảnh" subTitle="Ảnh đại diện cho danh mục">
                     <div 
-                        className="group relative aspect-square w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center p-6 shadow-xs"
+                        className="group relative aspect-square w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center shadow-xs"
                         onClick={() => fileInputRef.current?.click()}
                     >
                         {previewThumbnail ? (
@@ -70,7 +70,7 @@ export default function FormCategoryCreate({ categories }: FormCategoryCreatePro
                                 alt="preview" 
                                 width={400} 
                                 height={400} 
-                                className="w-full h-full object-cover rounded-xl" 
+                                className="w-full h-full object-cover" 
                             />
                         ) : (
                             <>
@@ -82,7 +82,7 @@ export default function FormCategoryCreate({ categories }: FormCategoryCreatePro
                                 </p>
                             </>
                         )}
-                        <div className="absolute inset-0 bg-indigo-900/40 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity flex items-center justify-center backdrop-blur-xs">
+                        <div className="absolute inset-0 bg-indigo-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-xs">
                             <Camera className="w-8 h-8 text-white animate-in zoom-in-75 duration-300" />
                         </div>
                         <input 
@@ -147,7 +147,7 @@ export default function FormCategoryCreate({ categories }: FormCategoryCreatePro
                         <Input 
                             label="Tên danh mục"
                             name="title"
-                            placeholder="Ví dụ: Chăm sóc da, Trang điểm..."
+                            placeholder="Ví dụ: Nhẫn, Dây chuyền, Bông tai..."
                             icon={<Layers className="w-4 h-4" />}
                             required
                         />

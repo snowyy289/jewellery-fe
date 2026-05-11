@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -85,7 +86,7 @@ export default function FormArticleCreate() {
             <div className="lg:col-span-1 space-y-6">
                 <AdminCard title="Ảnh đại diện" subTitle="Thumbnail bài viết">
                     <div 
-                        className="group relative aspect-[16/9] w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center p-6 shadow-xs"
+                        className="group relative aspect-video w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center p-6 shadow-xs"
                         onClick={() => thumbnailInputRef.current?.click()}
                     >
                         {previewThumbnail ? (
@@ -211,6 +212,7 @@ export default function FormArticleCreate() {
 
                 <AdminCard title="Nội dung bài viết" subTitle="Viết nội dung chi tiết">
                     <RichTextEditor
+                        name="content"
                         value={content}
                         onChange={setContent}
                         height={500}

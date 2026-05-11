@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, ShoppingBag, User, Menu, X, Diamond, Phone, MapPin } from "lucide-react";
+import { Search, User, Menu, X, Diamond, Phone, MapPin } from "lucide-react";
 import { usePathname } from "next/navigation";
+import CartIcon from "@/components/cart/CartIcon";
 
 export default function ClientHeader() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -22,6 +23,7 @@ export default function ClientHeader() {
         { name: "Sản Phẩm", href: "/products" },
         { name: "Bộ Sưu Tập", href: "/collections" },
         { name: "Cẩm Nang", href: "/blog" },
+        { name: "Đơn Hàng", href: "/orders" },
         { name: "Liên Hệ", href: "/contact" },
     ];
 
@@ -66,7 +68,7 @@ export default function ClientHeader() {
                                 <div className="absolute inset-0 bg-gold blur-lg opacity-0 group-hover:opacity-20 transition-opacity"></div>
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-2xl md:text-3xl font-serif tracking-[0.1em] uppercase text-stone-900 leading-none">
+                                <span className="text-2xl md:text-3xl font-serif tracking-widest uppercase text-stone-900 leading-none">
                                     Jewelry <span className="text-gold italic font-light">Eco</span>
                                 </span>
                                 <span className="text-[7px] font-bold tracking-[0.4em] uppercase text-stone-400 mt-1">Luxury Boutique</span>
@@ -104,12 +106,9 @@ export default function ClientHeader() {
                                 <Link href="/login" className="text-stone-600 hover:text-gold transition-colors">
                                     <User className="w-5 h-5" />
                                 </Link>
-                                <Link href="/cart" className="relative text-stone-600 hover:text-gold transition-colors p-2 bg-stone-50 rounded-full border border-stone-100">
-                                    <ShoppingBag className="w-5 h-5" />
-                                    <span className="absolute top-0 right-0 bg-stone-900 text-white text-[8px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-sm border border-white">
-                                        0
-                                    </span>
-                                </Link>
+                                <div className="text-stone-600 hover:text-gold transition-colors p-2 bg-stone-50 rounded-full border border-stone-100">
+                                    <CartIcon />
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -18,10 +18,12 @@ export interface Brand {
 }
 
 export interface BrandResponse extends GenericResponse {
-  brands: Brand[];
+  brands?: Brand[]; // Optional vì backend có thể trả về 'data'
+  data?: Brand[]; // Backend trả về 'data' thay vì 'brands'
   pagination?: Pagination;
 }
 
 export interface SingleBrandResponse extends GenericResponse {
-  brand: Brand;
+  brand?: Brand;
+  data?: Brand;
 }

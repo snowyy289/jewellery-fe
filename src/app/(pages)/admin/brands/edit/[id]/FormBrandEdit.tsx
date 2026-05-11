@@ -18,13 +18,13 @@ interface FormBrandEditProps {
 
 export default function FormBrandEdit({ brand, id }: FormBrandEditProps) {
     const [isLoading, setIsLoading] = useState(false);
-    const [previewThumbnail, setPreviewThumbnail] = useState<string | null>(brand?.thumbnail || null);
+    const [previewThumbnail, setPreviewThumbnail] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
 
     useEffect(() => {
-        if (brand) {
-            setPreviewThumbnail(brand.thumbnail || null);
+        if (brand?.thumbnail) {
+            setPreviewThumbnail(brand.thumbnail);
         }
     }, [brand]);
 
@@ -45,7 +45,7 @@ export default function FormBrandEdit({ brand, id }: FormBrandEditProps) {
         try {
             const formData = new FormData(e.target as HTMLFormElement);
             const res = await brandService.updateBrand(id, formData);
-            if (res.code === "success") {
+            if (res.code === 200 || res.code === "success") {
                 toast.success("Cập nhật thương hiệu thành công!");
                 router.push("/admin/brands");
             } else {
@@ -58,13 +58,24 @@ export default function FormBrandEdit({ brand, id }: FormBrandEditProps) {
         }
     };
 
+    // If brand is null, show loading state
+    if (!brand) {
+        return (
+            <div className="flex items-center justify-center h-[40vh]">
+                <div className="text-center">
+                    <p className="text-sm text-slate-500">Đang tải dữ liệu thương hiệu...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left col: Image & Configuration */}
             <div className="lg:col-span-1 space-y-6">
                 <AdminCard title="Hình ảnh" subTitle="Logo đại diện cho thương hiệu">
                     <div 
-                        className="group relative aspect-square w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center p-6 shadow-xs"
+                        className="group relative aspect-square w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center shadow-xs"
                         onClick={() => fileInputRef.current?.click()}
                     >
                         {previewThumbnail ? (
@@ -73,7 +84,7 @@ export default function FormBrandEdit({ brand, id }: FormBrandEditProps) {
                                 alt="preview" 
                                 width={400} 
                                 height={400} 
-                                className="w-full h-full object-contain rounded-xl" 
+                                className="w-full h-full object-cover" 
                             />
                         ) : (
                             <>
@@ -85,7 +96,7 @@ export default function FormBrandEdit({ brand, id }: FormBrandEditProps) {
                                 </p>
                             </>
                         )}
-                        <div className="absolute inset-0 bg-indigo-900/40 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity flex items-center justify-center backdrop-blur-xs">
+                        <div className="absolute inset-0 bg-indigo-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-xs">
                             <div className="flex flex-col items-center gap-2 animate-in zoom-in-75 duration-300">
                                 <Camera className="w-8 h-8 text-white" />
                                 <span className="text-[10px] font-black text-white uppercase tracking-widest">Thay đổi ảnh</span>

@@ -1,37 +1,42 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axiosInstance from "../axiosInstance";
 import { Article, ArticleCategory } from "@/types/article";
 import { Pagination } from "@/types/pagination";
 
 interface ArticleCategoryResponse {
-  code: string;
+  code: string | number;
   message?: string;
-  categories: ArticleCategory[];
+  categories?: ArticleCategory[];
+  data?: ArticleCategory[];
   pagination?: Pagination;
   filterStatus?: any;
 }
 
 interface SingleArticleCategoryResponse {
-  code: string;
+  code: string | number;
   message?: string;
   category?: ArticleCategory;
+  data?: ArticleCategory;
 }
 
 interface ArticleResponse {
-  code: string;
+  code: string | number;
   message?: string;
-  articles: Article[];
+  articles?: Article[];
+  data?: Article[];
   pagination?: Pagination;
   filterStatus?: any;
 }
 
 interface SingleArticleResponse {
-  code: string;
+  code: string | number;
   message?: string;
   article?: Article;
+  data?: Article;
 }
 
 interface GenericResponse {
-  code: string;
+  code: string | number;
   message?: string;
 }
 

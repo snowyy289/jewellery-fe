@@ -31,8 +31,8 @@ function CategoriesContent() {
         setIsLoading(true);
         try {
             const res = await categoryService.getCategories(params);
-            if (res.code === "success") {
-                setCategories(res.categories);
+            if (res.code === 200 || res.code === 201 || res.code === "success") {
+                setCategories(res.categories || res.data || []);
                 if (res.pagination) {
                     setPagination({
                         currentPage: res.pagination.currentPage,
@@ -51,7 +51,7 @@ function CategoriesContent() {
         if (confirm("Xóa danh mục này có thể ảnh hưởng đến các sản phẩm liên quan. Bạn chắc chắn chứ?")) {
             try {
                 const res = await categoryService.deleteCategory(id);
-                if (res.code === "success") {
+                if (res.code === 200 || res.code === 201 || res.code === "success") {
                     toast.success("Xóa thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchCategories(params);

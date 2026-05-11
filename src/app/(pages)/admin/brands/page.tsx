@@ -31,8 +31,8 @@ function BrandsContent() {
         setIsLoading(true);
         try {
             const res = await brandService.getBrands(params);
-            if (res.code === "success") {
-                setBrands(res.brands);
+            if (res.code === 200 || res.code === "success") {
+                setBrands(res.data || res.brands || []);
                 if (res.pagination) {
                     setPagination({
                         currentPage: res.pagination.currentPage,
@@ -51,7 +51,7 @@ function BrandsContent() {
         if (confirm("Xóa thương hiệu này có thể ảnh hưởng đến các sản phẩm liên quan. Bạn chắc chắn chứ?")) {
             try {
                 const res = await brandService.deleteBrand(id);
-                if (res.code === "success") {
+                if (res.code === 200 || res.code === "success") {
                     toast.success("Xóa thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchBrands(params);
@@ -120,13 +120,13 @@ function BrandsContent() {
                                     <tr key={item._id} className="group hover:bg-indigo-50/30 transition-all duration-300">
                                         <td className="px-8 py-4">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-xl overflow-hidden shadow-sm group-hover:shadow-indigo-100 transition-all">
+                                                <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm group-hover:shadow-indigo-100 transition-all bg-white shrink-0">
                                                     {item.thumbnail ? (
                                                         <Image 
                                                             src={item.thumbnail} 
                                                             alt={item.title} 
-                                                            width={48} 
-                                                            height={48} 
+                                                            width={64} 
+                                                            height={64} 
                                                             className="w-full h-full object-cover" 
                                                         />
                                                     ) : (

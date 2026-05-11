@@ -47,7 +47,7 @@ export default function FormBannerEdit({ banner }: FormBannerEditProps) {
         try {
             const formData = new FormData(e.target as HTMLFormElement);
             const res = await bannerService.updateBanner(params.id as string, formData);
-            if (res.code === "success") {
+            if (res.code === 200 || res.code === 201 || res.code === "success") {
                 toast.success("Cập nhật banner thành công!");
                 router.push("/admin/banners");
             } else {
@@ -60,18 +60,14 @@ export default function FormBannerEdit({ banner }: FormBannerEditProps) {
         }
     };
 
-    // Format datetime for input
-    const formatDateTimeLocal = (date?: string) => {
-        if (!date) return "";
-        return new Date(date).toISOString().slice(0, 16);
-    };
+
 
     return (
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-1 space-y-6">
                 <AdminCard title="Hình ảnh Banner" subTitle="Ảnh hiển thị trên website">
                     <div 
-                        className="group relative aspect-[16/9] w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center p-6 shadow-xs"
+                        className="group relative aspect-video w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center p-6 shadow-xs"
                         onClick={() => fileInputRef.current?.click()}
                     >
                         {previewImage && (

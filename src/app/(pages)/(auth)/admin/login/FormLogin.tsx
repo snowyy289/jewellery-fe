@@ -20,20 +20,44 @@ export default function FormLogin() {
             const email = formData.get("email") as string;
             const password = formData.get("password") as string;
 
+            console.log("🔐 [LOGIN] Sending login request...", { email });
+            
             const res = await authService.login({ email, password });
+            
+            console.log("📦 [LOGIN] Response received:", res);
+            console.log("📊 [LOGIN] Response code:", res.code);
+            console.log("📊 [LOGIN] Response code type:", typeof res.code);
+            console.log("🔑 [LOGIN] Has token:", !!res.token);
+            console.log("👤 [LOGIN] Has user:", !!res.user);
 
-            if (res.code === "success") {
+            if (res.code === 200) {
+                console.log("✅ [LOGIN] Code is 200, proceeding with login...");
+                
+                // Save to localStorage
                 localStorage.setItem("token", res.token);
+                console.log("💾 [LOGIN] Token saved to localStorage");
+                
                 if (res.user) {
                     localStorage.setItem("user", JSON.stringify(res.user));
+                    console.log("💾 [LOGIN] User saved to localStorage:", res.user);
                 }
+                
+                // Save to cookies for middleware
+                document.cookie = `token=${res.token}; path=/; max-age=${30 * 24 * 60 * 60}`; // 30 days
+                console.log("🍪 [LOGIN] Token saved to cookies");
+                
                 toast.success("Chào mừng bạn quay trở lại!");
-                router.push("/admin/dashboard");
+                
+                console.log("🚀 [LOGIN] Redirecting to /admin/dashboard...");
+                // Force navigation to dashboard
+                window.location.href = "/admin/dashboard";
             } else {
+                console.log("❌ [LOGIN] Code is NOT 200, showing error");
+                console.log("❌ [LOGIN] Expected: 200, Got:", res.code);
                 toast.error(res.message || "Đăng nhập thất bại!");
             }
         } catch (error) {
-            console.error("Login error:", error);
+            console.error("💥 [LOGIN] Error:", error);
             toast.error("Lỗi kết nối Server!");
         } finally {
             setIsLoading(false);

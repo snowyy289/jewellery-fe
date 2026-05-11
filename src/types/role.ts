@@ -14,7 +14,8 @@ export interface Role {
 }
 
 export interface RoleResponse extends GenericResponse {
-  roles: Role[];
+  roles?: Role[];
+  data?: Role[];
   pagination?: Pagination;
 }
 

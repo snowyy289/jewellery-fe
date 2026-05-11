@@ -35,6 +35,6 @@ export interface ResetPasswordRequest {
 }
 
 export interface GenericResponse {
-    code: string;
+    code: string | number; // Backend trả về number (200, 201) nhưng một số chỗ dùng string
     message: string;
 }

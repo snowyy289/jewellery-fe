@@ -21,7 +21,7 @@ export default function FormRoleCreate() {
             // Convert formData to object since shared service might expect object for JSON API
             const data = Object.fromEntries(formData.entries());
             const res = await roleService.createRole(data);
-            if (res.code === "success") {
+            if (res.code === 200 || res.code === 201 || res.code === "success") {
                 toast.success("Tạo nhóm quyền thành công!");
                 router.push("/admin/roles");
             } else {

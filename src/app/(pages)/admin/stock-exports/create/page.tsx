@@ -17,11 +17,15 @@ export default function CreateStockExportPage() {
         try {
             const productsRes = await productService.getProducts({ status: "active", limit: 1000 });
 
-            if (productsRes.code === "success") {
-                setProducts(productsRes.products);
+            console.log("📦 Products response:", productsRes);
+
+            if (productsRes.code === 200 || productsRes.code === "success") {
+                const productsList = productsRes.products || productsRes.data || [];
+                console.log("✅ Setting products:", productsList);
+                setProducts(productsList);
             }
         } catch (error) {
-            console.error(error);
+            console.error("💥 Fetch data error:", error);
         } finally {
             setIsFetching(false);
         }

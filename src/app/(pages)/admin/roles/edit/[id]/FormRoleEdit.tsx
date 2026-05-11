@@ -26,7 +26,7 @@ export default function FormRoleEdit({ role, id }: FormRoleEditProps) {
             const formData = new FormData(e.target as HTMLFormElement);
             const data = Object.fromEntries(formData.entries());
             const res = await roleService.updateRole(id, data);
-            if (res.code === "success") {
+            if (res.code === 200 || res.code === 201 || res.code === "success") {
                 toast.success("Cập nhật nhóm quyền thành công!");
                 router.push("/admin/roles");
             } else {

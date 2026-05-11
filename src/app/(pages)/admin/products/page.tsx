@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
@@ -7,15 +8,22 @@ import Image from "next/image";
 import Button from "@/components/button/Button";
 import { AdminPageHeader, AdminCard } from "@/components/layouts/admin/shared";
 import { productService } from "@/services/admin/productService";
+import { categoryService } from "@/services/admin/categoryService";
+import { userService } from "@/services/admin/userService";
 import { Product } from "@/types/product";
+import { Category } from "@/types/category";
 import { toast } from "sonner";
 import Search from "@/components/search/Search";
 import FilterStatus from "@/components/filter/FilterStatus";
+import ProductFilter from "@/components/filter/ProductFilter";
 import Pagination from "@/components/pagination/Pagination";
 
 function ProductsContent() {
     const searchParams = useSearchParams();
     const [products, setProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [brands, setBrands] = useState<any[]>([]);
+    const [users, setUsers] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [pagination, setPagination] = useState({
         currentPage: 1,
@@ -23,16 +31,55 @@ function ProductsContent() {
     });
 
     useEffect(() => {
+        fetchInitialData();
+    }, []);
+
+    useEffect(() => {
         const params = Object.fromEntries(searchParams.entries());
         fetchProducts(params);
     }, [searchParams]);
+
+    const fetchInitialData = async () => {
+        try {
+            // Fetch categories, brands and users for filters
+            const brandService = await import('@/services/admin/brandService').then(m => m.brandService);
+            
+            const [catRes, brandRes, userRes] = await Promise.all([
+                categoryService.getCategories({ status: 'active' }),
+                brandService.getBrands({ status: 'active' }),
+                userService.getUsers({ status: 'active' })
+            ]);
+            
+            console.log("📦 Categories response:", catRes);
+            console.log("🏷️ Brands response:", brandRes);
+            console.log("👥 Users response:", userRes);
+            
+            if (catRes.code === 200 || catRes.code === "success") {
+                const cats = catRes.data || catRes.categories || [];
+                console.log("✅ Setting categories:", cats);
+                setCategories(cats);
+            }
+            if (brandRes.code === 200 || brandRes.code === "success") {
+                const brands = brandRes.data || brandRes.brands || [];
+                console.log("✅ Setting brands:", brands);
+                setBrands(brands);
+            }
+            if (userRes.code === 200 || userRes.code === "success") {
+                const usrs = userRes.data || userRes.users || [];
+                console.log("✅ Setting users:", usrs);
+                setUsers(usrs);
+            }
+        } catch (error) {
+            console.error("Fetch initial data error:", error);
+        }
+    };
 
     const fetchProducts = async (params: Record<string, string | number | boolean> = {}) => {
         setIsLoading(true);
         try {
             const res = await productService.getProducts(params);
-            if (res.code === "success") {
-                setProducts(res.products);
+            if (res.code === 200 || res.code === "success") {
+                setProducts(res.data || res.products || []);
                 if (res.pagination) {
                     setPagination({
                         currentPage: res.pagination.currentPage,
@@ -40,8 +87,8 @@ function ProductsContent() {
                     });
                 }
             }
-        } catch {
-            console.error("Fetch products error");
+        } catch (error) {
+            console.error("💥 Fetch products error:", error);
         } finally {
             setIsLoading(false);
         }
@@ -51,7 +98,7 @@ function ProductsContent() {
         if (confirm("Xóa sản phẩm này sẽ ẩn nó khỏi hệ thống. Bạn chắc chắn chứ?")) {
             try {
                 const res = await productService.deleteProduct(id);
-                if (res.code === "success") {
+                if (res.code === 200 || res.code === "success") {
                     toast.success("Xóa thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchProducts(params);
@@ -85,7 +132,10 @@ function ProductsContent() {
             />
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <FilterStatus />
+                <div className="flex items-center gap-3">
+                    <FilterStatus />
+                    <ProductFilter categories={categories} brands={brands} users={users} />
+                </div>
                 <Search />
             </div>
 
@@ -123,27 +173,27 @@ function ProductsContent() {
                                 products.map((item) => (
                                     <tr key={item._id} className="group hover:bg-indigo-50/30 transition-all duration-300">
                                         <td className="px-8 py-4">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-xl overflow-hidden shadow-sm group-hover:shadow-indigo-100 transition-all">
+                                            <div className="flex items-center gap-6">
+                                                <div className="w-20 h-20 rounded-xl overflow-hidden shadow-sm group-hover:shadow-indigo-100 transition-all shrink-0">
                                                     {item.thumbnail ? (
                                                         <Image 
                                                             src={item.thumbnail} 
                                                             alt={item.title} 
-                                                            width={48} 
-                                                            height={48} 
+                                                            width={80} 
+                                                            height={80} 
                                                             className="w-full h-full object-cover" 
                                                         />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center bg-slate-50 border border-slate-100">
-                                                            <Package className="w-5 h-5 text-slate-300" />
+                                                            <Package className="w-8 h-8 text-slate-300" />
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-bold text-slate-800 transition-colors group-hover:text-indigo-600">
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="text-sm font-bold text-slate-800 transition-colors group-hover:text-indigo-600 line-clamp-2">
                                                         {item.title}
                                                     </p>
-                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+                                                    <p className="text-[10px] text-slate-400 font-medium mt-1">
                                                         SKU: {item.sku}
                                                     </p>
                                                 </div>

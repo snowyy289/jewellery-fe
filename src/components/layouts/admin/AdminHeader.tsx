@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -36,16 +37,20 @@ export default function AdminHeader({ isSidebarCollapsed, onToggleSidebar }: Adm
     const pathname = usePathname();
     const router = useRouter();
     const confirm = useConfirm();
-    const [user] = useState<UserType | null>(() => {
-        if (typeof window !== "undefined") {
-            const userData = localStorage.getItem("user");
-            return userData ? JSON.parse(userData) : null;
-        }
-        return null;
-    });
+    const [user, setUser] = useState<UserType | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [hasNotif] = useState(true);
     const menuRef = useRef<HTMLDivElement>(null);
+    
+    // Load user from localStorage after mount to avoid hydration mismatch
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const userData = localStorage.getItem("user");
+            if (userData) {
+                setUser(JSON.parse(userData)); // eslint-disable-line react-hooks/set-state-in-effect
+            }
+        }
+    }, []);
     
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -65,11 +70,15 @@ export default function AdminHeader({ isSidebarCollapsed, onToggleSidebar }: Adm
                     await authService.logout();
                     localStorage.removeItem("token");
                     localStorage.removeItem("user");
-                    router.push("/admin/login");
+                    // Remove cookie
+                    document.cookie = "token=; path=/; max-age=0";
+                    window.location.href = "/admin/login";
                 } catch {
                     localStorage.removeItem("token");
                     localStorage.removeItem("user");
-                    router.push("/admin/login");
+                    // Remove cookie
+                    document.cookie = "token=; path=/; max-age=0";
+                    window.location.href = "/admin/login";
                 }
             },
             {

@@ -1,23 +1,26 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axiosInstance from "../axiosInstance";
 import { Banner } from "@/types/banner";
 import { Pagination } from "@/types/pagination";
 
 interface BannerResponse {
-  code: string;
+  code: string | number;
   message?: string;
-  banners: Banner[];
+  banners?: Banner[];
+  data?: Banner[];
   pagination?: Pagination;
   filterStatus?: any;
 }
 
 interface SingleBannerResponse {
-  code: string;
+  code: string | number;
   message?: string;
   banner?: Banner;
+  data?: Banner;
 }
 
 interface GenericResponse {
-  code: string;
+  code: string | number;
   message?: string;
 }
 

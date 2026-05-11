@@ -19,7 +19,7 @@ export default function FormSupplierCreate() {
         try {
             const formData = new FormData(e.target as HTMLFormElement);
             const res = await supplierService.createSupplier(formData);
-            if (res.code === "success") {
+            if (res.code === 201 || res.code === 200) {
                 toast.success("Tạo nhà cung cấp thành công!");
                 router.push("/admin/suppliers");
             } else {

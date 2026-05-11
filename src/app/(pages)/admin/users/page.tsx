@@ -31,8 +31,8 @@ function UsersContent() {
         setIsLoading(true);
         try {
             const res = await userService.getUsers(params);
-            if (res.code === "success") {
-                setUsers(res.users);
+            if (res.code === 200) {
+                setUsers(res.data || res.users || []);
                 if (res.pagination) {
                     setPagination({
                         currentPage: res.pagination.currentPage,
@@ -51,7 +51,7 @@ function UsersContent() {
         if (confirm(`Bạn chắc chắn muốn xóa người dùng "${name}"?`)) {
             try {
                 const res = await userService.deleteUser(id);
-                if (res.code === "success") {
+                if (res.code === 200) {
                     toast.success("Xóa người dùng thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchUsers(params);

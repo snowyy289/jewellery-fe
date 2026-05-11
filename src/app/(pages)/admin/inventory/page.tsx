@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Package, AlertTriangle, TrendingUp, TrendingDown, Search as SearchIcon, Download } from "lucide-react";
+import { Package, AlertTriangle, TrendingUp, TrendingDown, Download } from "lucide-react";
 import { AdminPageHeader, AdminCard } from "@/components/layouts/admin/shared";
 import { productService } from "@/services/admin/productService";
 import { Product } from "@/types/product";
@@ -33,8 +33,9 @@ function InventoryContent() {
         setIsLoading(true);
         try {
             const res = await productService.getProducts({ ...params, status: "active" });
-            if (res.code === "success") {
-                setProducts(res.products);
+            if (res.code === 200 || res.code === "success") {
+                const productList = res.products || res.data || [];
+                setProducts(productList);
                 if (res.pagination) {
                     setPagination({
                         currentPage: res.pagination.currentPage,
@@ -43,10 +44,10 @@ function InventoryContent() {
                 }
 
                 // Calculate stats
-                const totalProducts = res.products.length;
-                const totalValue = res.products.reduce((sum, p) => sum + (p.stock * p.price), 0);
-                const lowStock = res.products.filter(p => p.stock > 0 && p.stock <= 10).length;
-                const outOfStock = res.products.filter(p => p.stock === 0).length;
+                const totalProducts = productList.length;
+                const totalValue = productList.reduce((sum, p) => sum + (p.stock * p.price), 0);
+                const lowStock = productList.filter(p => p.stock > 0 && p.stock <= 10).length;
+                const outOfStock = productList.filter(p => p.stock === 0).length;
 
                 setStats({ totalProducts, totalValue, lowStock, outOfStock });
             }
@@ -115,7 +116,7 @@ function InventoryContent() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+                <div className="p-6 rounded-2xl bg-linear-to-br from-blue-50 to-indigo-50 border border-blue-100">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">Tổng SP</p>
                         <Package className="w-5 h-5 text-blue-500" />
@@ -124,7 +125,7 @@ function InventoryContent() {
                     <p className="text-xs text-blue-600 mt-1">Sản phẩm đang bán</p>
                 </div>
 
-                <div className="p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100">
+                <div className="p-6 rounded-2xl bg-linear-to-br from-emerald-50 to-green-50 border border-emerald-100">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Giá trị tồn</p>
                         <TrendingUp className="w-5 h-5 text-emerald-500" />
@@ -133,7 +134,7 @@ function InventoryContent() {
                     <p className="text-xs text-emerald-600 mt-1">Tổng giá trị kho</p>
                 </div>
 
-                <div className="p-6 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100">
+                <div className="p-6 rounded-2xl bg-linear-to-br from-amber-50 to-orange-50 border border-amber-100">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-xs font-bold text-amber-600 uppercase tracking-wider">Sắp hết</p>
                         <TrendingDown className="w-5 h-5 text-amber-500" />
@@ -142,7 +143,7 @@ function InventoryContent() {
                     <p className="text-xs text-amber-600 mt-1">Tồn kho ≤ 10</p>
                 </div>
 
-                <div className="p-6 rounded-2xl bg-gradient-to-br from-rose-50 to-red-50 border border-rose-100">
+                <div className="p-6 rounded-2xl bg-linear-to-br from-rose-50 to-red-50 border border-rose-100">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-xs font-bold text-rose-600 uppercase tracking-wider">Hết hàng</p>
                         <AlertTriangle className="w-5 h-5 text-rose-500" />

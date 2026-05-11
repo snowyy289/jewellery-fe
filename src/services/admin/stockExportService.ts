@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axiosInstance from "../axiosInstance";
 import { StockExportResponse, SingleStockExportResponse } from "@/types/stock-export";
 import { GenericResponse } from "@/types/auth";
@@ -9,7 +10,7 @@ export const stockExportService = {
     },
 
     getStockExportDetail: async (id: string) => {
-        const response = await axiosInstance.get<SingleStockExportResponse>(`/api/admin/stock-exports/detail/${id}`);
+        const response = await axiosInstance.get<SingleStockExportResponse>(`/admin/stock-exports/detail/${id}`);
         return response.data;
     },
 
@@ -19,22 +20,22 @@ export const stockExportService = {
     },
 
     updateStockExport: async (id: string, data: any) => {
-        const response = await axiosInstance.patch<GenericResponse>(`/api/admin/stock-exports/edit/${id}`, data);
+        const response = await axiosInstance.patch<GenericResponse>(`/admin/stock-exports/edit/${id}`, data);
         return response.data;
     },
 
     confirmStockExport: async (id: string) => {
-        const response = await axiosInstance.post<GenericResponse>(`/api/admin/stock-exports/confirm/${id}`);
+        const response = await axiosInstance.post<GenericResponse>(`/admin/stock-exports/confirm/${id}`);
         return response.data;
     },
 
     cancelStockExport: async (id: string) => {
-        const response = await axiosInstance.post<GenericResponse>(`/api/admin/stock-exports/cancel/${id}`);
+        const response = await axiosInstance.post<GenericResponse>(`/admin/stock-exports/cancel/${id}`);
         return response.data;
     },
 
     deleteStockExport: async (id: string) => {
-        const response = await axiosInstance.delete<GenericResponse>(`/api/admin/stock-exports/delete/${id}`);
+        const response = await axiosInstance.delete<GenericResponse>(`/admin/stock-exports/delete/${id}`);
         return response.data;
     }
 };

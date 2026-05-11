@@ -26,19 +26,23 @@ export interface StockExport {
 }
 
 export interface StockExportResponse {
-    code: string;
+    code: string | number;
     message: string;
-    stockExports: StockExport[];
-    pagination: {
-        page: number;
-        limit: number;
-        total: number;
-        totalPages: number;
+    stockExports?: StockExport[];
+    data?: StockExport[];
+    pagination?: {
+        page?: number;
+        currentPage?: number;
+        limit?: number;
+        total?: number;
+        totalPages?: number;
+        totalPage?: number;
     };
 }
 
 export interface SingleStockExportResponse {
-    code: string;
+    code: string | number;
     message: string;
-    stockExport: StockExport;
+    stockExport?: StockExport;
+    data?: StockExport;
 }

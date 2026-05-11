@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { GenericResponse } from "./auth";
 import { Pagination } from "./pagination";
 import { Product } from "./product";
@@ -32,12 +33,14 @@ export interface StockImport {
 }
 
 export interface StockImportResponse extends GenericResponse {
-  imports: StockImport[];
+  imports?: StockImport[];
+  data?: StockImport[];
   pagination?: Pagination;
 }
 
 export interface SingleStockImportResponse extends GenericResponse {
-  stockImport: StockImport;
+  stockImport?: StockImport;
+  data?: StockImport;
 }
 
 export interface StockImportCreateRequest {

@@ -27,19 +27,28 @@ export default function PermissionsPage() {
                 roleService.getPermissions()
             ]);
 
-            if (rolesRes.code === "success" && permsRes.code === "success") {
-                setRoles(rolesRes.roles);
-                setPermissions(permsRes.permissionList);
+            console.log("🔐 Roles response:", rolesRes);
+            console.log("🔑 Permissions response:", permsRes);
+
+            if ((rolesRes.code === 200 || rolesRes.code === "success") && (permsRes.code === 200 || permsRes.code === "success")) {
+                const rolesList = rolesRes.roles || rolesRes.data || [];
+                const permsList = permsRes.permissionList || permsRes.data || [];
+                
+                console.log("✅ Setting roles:", rolesList);
+                console.log("✅ Setting permissions:", permsList);
+                
+                setRoles(rolesList);
+                setPermissions(permsList);
                 
                 // Map current permissions of roles
                 const mapping: Record<string, string[]> = {};
-                rolesRes.roles.forEach((role: Role) => {
+                rolesList.forEach((role: Role) => {
                     mapping[role._id] = role.permissions || [];
                 });
                 setActivePermissions(mapping);
             }
-        } catch {
-            console.error("Fetch permissions error");
+        } catch (error) {
+            console.error("💥 Fetch permissions error:", error);
         } finally {
             setIsLoading(false);
         }

@@ -29,9 +29,14 @@ export default function FormUserEdit({ user, id }: FormUserEditProps) {
         const fetchRoles = async () => {
             try {
                 const res = await roleService.getRoles();
-                if (res.code === "success") setRoles(res.roles);
-            } catch {
-                console.error("Fetch roles error");
+                console.log("🔐 Roles response:", res);
+                if (res.code === 200 || res.code === "success") {
+                    const rolesList = res.roles || res.data || [];
+                    console.log("✅ Setting roles:", rolesList);
+                    setRoles(rolesList);
+                }
+            } catch (error) {
+                console.error("💥 Fetch roles error:", error);
             }
         };
         fetchRoles();
@@ -64,7 +69,7 @@ export default function FormUserEdit({ user, id }: FormUserEditProps) {
             const formElement = e.target as HTMLFormElement;
             const formData = new FormData(formElement);
             const res = await userService.updateUser(id, formData);
-            if (res.code === "success") {
+            if (res.code === 200 || res.code === 201 || res.code === "success") {
                 toast.success("Cập nhật người dùng thành công!");
                 router.push("/admin/users");
             } else {

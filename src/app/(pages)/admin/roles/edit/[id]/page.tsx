@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { Shield } from "lucide-react";
 import { AdminPageHeader } from "@/components/layouts/admin/shared";
 import { roleService } from "@/services/admin/roleService";
 import { Role } from "@/types/role";
@@ -17,8 +16,10 @@ export default function EditRolePage() {
     const fetchRole = useCallback(async () => {
         try {
             const res = await roleService.getRoles();
-            if (res.code === "success") {
-                const found = res.roles.find((r: Role) => r._id === id);
+            console.log("🔐 Roles response:", res);
+            if (res.code === 200 || res.code === "success") {
+                const rolesList = res.roles || res.data || [];
+                const found = rolesList.find((r: Role) => r._id === id);
                 if (found) {
                     setRole(found);
                 } else {
@@ -26,8 +27,8 @@ export default function EditRolePage() {
                     router.push("/admin/roles");
                 }
             }
-        } catch {
-            console.error("Fetch data error");
+        } catch (error) {
+            console.error("💥 Fetch data error:", error);
         } finally {
             setIsFetching(false);
         }

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Truck, Activity, Save, X, User, Phone, Mail, MapPin, FileText, Building, Edit3 } from "lucide-react";
+import { Activity, Save, X, User, Phone, Mail, MapPin, FileText, Building, Edit3 } from "lucide-react";
 import Button from "@/components/button/Button";
 import Input from "@/components/input/Input";
 import Textarea from "@/components/input/Textarea";
@@ -25,7 +25,7 @@ export default function FormSupplierEdit({ supplier, id }: FormSupplierEditProps
         try {
             const formData = new FormData(e.target as HTMLFormElement);
             const res = await supplierService.updateSupplier(id, formData);
-            if (res.code === "success") {
+            if (res.code === 200 || res.code === 201) {
                 toast.success("Cập nhật nhà cung cấp thành công!");
                 router.push("/admin/suppliers");
             } else {

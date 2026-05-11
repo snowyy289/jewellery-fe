@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -31,18 +32,20 @@ export default function EditProductPage() {
                 brandService.getBrands({ status: "active" })
             ]);
 
-            if (productRes.code === "success") {
-                setProduct(productRes.product);
+            if (productRes.code === 200 || productRes.code === "success") {
+                const prod = productRes.product || productRes.data || null;
+                console.log("📦 Product data:", prod);
+                setProduct(prod);
             } else {
                 toast.error(productRes.message);
             }
 
-            if (categoriesRes.code === "success") {
-                setCategories(categoriesRes.categories);
+            if (categoriesRes.code === 200 || categoriesRes.code === "success") {
+                setCategories(categoriesRes.data || categoriesRes.categories || []);
             }
 
-            if (brandsRes.code === "success") {
-                setBrands(brandsRes.brands);
+            if (brandsRes.code === 200 || brandsRes.code === "success") {
+                setBrands(brandsRes.data || brandsRes.brands || []);
             }
         } catch (error) {
             console.error(error);

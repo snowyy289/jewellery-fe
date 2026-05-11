@@ -30,8 +30,8 @@ function SuppliersContent() {
         setIsLoading(true);
         try {
             const res = await supplierService.getSuppliers(params);
-            if (res.code === "success") {
-                setSuppliers(res.suppliers);
+            if (res.code === 200 || res.code === "success") {
+                setSuppliers(res.data || res.suppliers || []);
                 if (res.pagination) {
                     setPagination({
                         currentPage: res.pagination.currentPage,
@@ -50,7 +50,7 @@ function SuppliersContent() {
         if (confirm("Xóa nhà cung cấp này sẽ ẩn nó khỏi hệ thống. Bạn chắc chắn chứ?")) {
             try {
                 const res = await supplierService.deleteSupplier(id);
-                if (res.code === "success") {
+                if (res.code === 200 || res.code === "success") {
                     toast.success("Xóa thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchSuppliers(params);

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -26,8 +27,10 @@ export default function EditBrandPage() {
             // Wait, I should add a detail API in backend brand controller.
             // For now, I will fetch all and find the one. This is a temporary workaround.
             const res = await brandService.getBrands();
-            if (res.code === "success") {
-                const found = res.brands.find((b: Brand) => b._id === id);
+            if (res.code === 200 || res.code === "success") {
+                // Backend trả về 'data' chứ không phải 'brands'
+                const brandsList = res.data || res.brands || [];
+                const found = brandsList.find((b: Brand) => b._id === id);
                 if (found) {
                     setBrand(found);
                 } else {

@@ -16,8 +16,10 @@ export default function CreateCategoryPage() {
     const fetchParentCategories = async () => {
         try {
             const res = await categoryService.getCategories();
-            if (res.code === "success") {
-                setCategories(res.categories);
+            if (res.code === 200) {
+                // Backend trả về 'data' chứ không phải 'categories'
+                const categoriesList = res.data || res.categories || [];
+                setCategories(categoriesList);
             }
         } catch (error) {
             console.error(error);

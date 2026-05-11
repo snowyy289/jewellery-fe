@@ -17,14 +17,17 @@ export default function EditUserPage() {
     const fetchData = useCallback(async () => {
         try {
             const res = await userService.getUserDetail(id);
-            if (res.code === "success") {
-                setUser(res.user);
+            console.log("👤 User response:", res);
+            if (res.code === 200 || res.code === "success") {
+                const userData = res.user || res.data || null;
+                console.log("✅ Setting user:", userData);
+                setUser(userData);
             } else {
                 toast.error("Không tìm thấy người dùng!");
                 router.push("/admin/users");
             }
-        } catch {
-            console.error("Fetch user error");
+        } catch (error) {
+            console.error("💥 Fetch user error:", error);
         } finally {
             setIsFetching(false);
         }

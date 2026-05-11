@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -112,7 +113,7 @@ export default function FormStockExportCreate({ products }: FormStockExportCreat
             };
 
             const res = await stockExportService.createStockExport(data);
-            if (res.code === "success") {
+            if (res.code === 200 || res.code === 201 || res.code === "success") {
                 toast.success("Tạo phiếu xuất kho thành công!");
                 router.push("/admin/stock-exports");
             } else {
@@ -183,19 +184,29 @@ export default function FormStockExportCreate({ products }: FormStockExportCreat
                     <div className="text-center py-12 text-slate-400">
                         <PackageMinus className="w-12 h-12 mx-auto mb-3 opacity-30" />
                         <p className="text-sm font-medium">Chưa có sản phẩm nào</p>
-                        <p className="text-xs mt-1">Nhấn "Thêm sản phẩm" để bắt đầu</p>
+                        <p className="text-xs mt-1">Nhấn Thêm sản phẩm để bắt đầu</p>
                     </div>
                 ) : (
-                    <div className="space-y-4">
-                        {items.map((item, index) => (
-                            <div key={index} className="p-4 border border-slate-200 rounded-xl bg-slate-50/50">
-                                <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                                    <div className="md:col-span-4">
-                                        <label className="text-xs font-semibold text-slate-600 mb-2 block">Sản phẩm</label>
+                    <div className="overflow-x-auto">
+                        {/* Table Header */}
+                        <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-slate-100 border border-slate-200 rounded-t-xl font-semibold text-xs text-slate-700">
+                            <div className="col-span-4">Sản phẩm</div>
+                            <div className="col-span-2">Số lượng</div>
+                            <div className="col-span-3">Giá xuất (VNĐ)</div>
+                            <div className="col-span-2">Tổng</div>
+                            <div className="col-span-1 text-center">Xóa</div>
+                        </div>
+
+                        {/* Table Body */}
+                        <div className="space-y-0">
+                            {items.map((item, index) => (
+                                <div key={index} className="grid grid-cols-12 gap-4 p-4 border-x border-b border-slate-200 bg-white hover:bg-slate-50/50 transition-colors">
+                                    {/* Product Select */}
+                                    <div className="col-span-4 flex items-center">
                                         <select
                                             value={item.product_id}
                                             onChange={(e) => updateItem(index, 'product_id', e.target.value)}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm"
+                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
                                             required
                                         >
                                             <option value="">-- Chọn sản phẩm --</option>
@@ -207,50 +218,52 @@ export default function FormStockExportCreate({ products }: FormStockExportCreat
                                         </select>
                                     </div>
 
-                                    <div className="md:col-span-2">
-                                        <label className="text-xs font-semibold text-slate-600 mb-2 block">Số lượng</label>
+                                    {/* Quantity */}
+                                    <div className="col-span-2 flex items-center">
                                         <input
                                             type="number"
                                             value={item.quantity}
                                             onChange={(e) => updateItem(index, 'quantity', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm"
+                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
                                             min="1"
                                             required
                                         />
                                     </div>
 
-                                    <div className="md:col-span-3">
-                                        <label className="text-xs font-semibold text-slate-600 mb-2 block">Giá xuất (VNĐ)</label>
+                                    {/* Export Price */}
+                                    <div className="col-span-3 flex items-center">
                                         <input
                                             type="number"
                                             value={item.export_price}
                                             onChange={(e) => updateItem(index, 'export_price', parseFloat(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm"
+                                            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
                                             min="0"
                                             step="1000"
                                             required
                                         />
                                     </div>
 
-                                    <div className="md:col-span-2">
-                                        <label className="text-xs font-semibold text-slate-600 mb-2 block">Tổng</label>
-                                        <div className="px-3 py-2 rounded-lg bg-rose-50 border border-rose-200 text-sm font-bold text-rose-700">
+                                    {/* Total */}
+                                    <div className="col-span-2 flex items-center">
+                                        <div className="w-full px-3 py-2 rounded-lg bg-rose-50 border border-rose-200 text-sm font-bold text-rose-700">
                                             {formatPrice(item.total)}
                                         </div>
                                     </div>
 
-                                    <div className="md:col-span-1 flex items-end">
+                                    {/* Delete Button */}
+                                    <div className="col-span-1 flex items-center justify-center">
                                         <button
                                             type="button"
                                             onClick={() => removeItem(index)}
-                                            className="w-full px-3 py-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors"
+                                            className="p-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors"
+                                            title="Xóa sản phẩm"
                                         >
-                                            <Trash2 className="w-4 h-4 mx-auto" />
+                                            <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
 
                         {/* Totals */}
                         <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl">

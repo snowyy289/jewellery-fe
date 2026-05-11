@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axiosInstance from "../axiosInstance";
 import { SupplierResponse, SingleSupplierResponse } from "@/types/supplier";
 import { GenericResponse } from "@/types/auth";

@@ -20,10 +20,12 @@ export interface AdminUser {
 }
 
 export interface UserResponse extends GenericResponse {
-  users: AdminUser[];
+  users?: AdminUser[]; // Optional vì backend có thể trả về 'data'
+  data?: AdminUser[]; // Backend trả về 'data' thay vì 'users'
   pagination?: Pagination;
 }
 
 export interface SingleUserResponse extends GenericResponse {
-  user: AdminUser;
+  user?: AdminUser;
+  data?: AdminUser;
 }

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -18,7 +19,6 @@ import {
   BarChart3,
   Image,
   FileText,
-  FolderOpen,
   Settings,
   Tags
 } from "lucide-react";
@@ -30,7 +30,7 @@ interface AdminSidebarProps {
 interface NavItem {
   href?: string;
   label: string;
-  icon: any;
+  icon: React.ElementType;
   desc: string;
   children?: NavItem[];
 }

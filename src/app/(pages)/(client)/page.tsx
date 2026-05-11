@@ -6,6 +6,7 @@ import { productService } from "@/services/client/productService";
 import { bannerService } from "@/services/client/bannerService";
 import { Product } from "@/types/product";
 import { Banner } from "@/types/banner";
+import Image from "next/image";
 
 export default function HomePage() {
     const [banners, setBanners] = useState<Banner[]>([]);
@@ -57,10 +58,12 @@ export default function HomePage() {
             {/* Hero Section - Dynamic */}
             <section className="relative h-[600px] md:h-[750px] flex items-center overflow-hidden bg-stone-100">
                 <div className="absolute inset-0 z-0">
-                    <img 
+                    <Image 
                         src={currentBanner.image} 
-                        alt={currentBanner.title} 
-                        className="w-full h-full object-cover"
+                        alt={currentBanner.title}
+                        fill
+                        className="object-cover"
+                        priority
                     />
                     <div className="absolute inset-0 bg-stone-900/20"></div>
                 </div>
@@ -107,7 +110,13 @@ export default function HomePage() {
                             <Link href={`/products?category=${cat.name}`} key={idx} className="group flex flex-col items-center gap-4">
                                 <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-transparent group-hover:border-gold transition-all duration-500 p-1">
                                     <div className="w-full h-full rounded-full overflow-hidden bg-white shadow-lg">
-                                        <img src={cat.image} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                        <Image 
+                                            src={cat.image} 
+                                            alt={cat.name} 
+                                            width={128}
+                                            height={128}
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                                        />
                                     </div>
                                     <div className="absolute inset-0 bg-gold/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"></div>
                                 </div>
@@ -133,10 +142,12 @@ export default function HomePage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                         {featuredProducts.map((product) => (
                             <div key={product._id} className="premium-card group">
-                                <div className="relative aspect-[3/4] overflow-hidden bg-stone-50 mb-6">
-                                    <img 
+                                <div className="relative aspect-3/4 overflow-hidden bg-stone-50 mb-6">
+                                    <Image 
                                         src={product.thumbnail || "https://images.unsplash.com/photo-1605100804763-247f661c6e61?auto=format&fit=crop&q=80&w=800"} 
-                                        alt={product.title} 
+                                        alt={product.title}
+                                        width={800}
+                                        height={1067}
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                                     />
                                     
@@ -191,10 +202,12 @@ export default function HomePage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
                         {newProducts.map((product) => (
                             <div key={product._id} className="premium-card group">
-                                <div className="relative aspect-[3/4] overflow-hidden bg-white mb-6">
-                                    <img 
+                                <div className="relative aspect-3/4 overflow-hidden bg-white mb-6">
+                                    <Image 
                                         src={product.thumbnail || "https://images.unsplash.com/photo-1599643478524-fb66f7ca265b?auto=format&fit=crop&q=80&w=800"} 
-                                        alt={product.title} 
+                                        alt={product.title}
+                                        width={800}
+                                        height={1067}
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                                     />
                                     <div className="absolute top-4 left-4 bg-gold text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest">

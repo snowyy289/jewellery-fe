@@ -23,8 +23,9 @@ export default function CreateProductPage() {
                 brandService.getBrands({ status: "active" })
             ]);
             
-            if (catRes.code === "success") setCategories(catRes.categories);
-            if (brandRes.code === "success") setBrands(brandRes.brands);
+            // Backend trả về 'data' chứ không phải 'categories' hay 'brands'
+            if (catRes.code === 200) setCategories(catRes.data || catRes.categories || []);
+            if (brandRes.code === 200) setBrands(brandRes.data || brandRes.brands || []);
         } catch (error) {
             console.error(error);
         } finally {

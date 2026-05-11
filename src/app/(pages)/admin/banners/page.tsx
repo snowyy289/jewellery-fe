@@ -31,8 +31,8 @@ function BannersContent() {
         setIsLoading(true);
         try {
             const res = await bannerService.getBanners(params);
-            if (res.code === "success") {
-                setBanners(res.banners);
+            if (res.code === 200 || res.code === 201 || res.code === "success") {
+                setBanners(res.banners || res.data || []);
                 if (res.pagination) {
                     setPagination({
                         currentPage: res.pagination.currentPage,
@@ -51,7 +51,7 @@ function BannersContent() {
         if (confirm("Bạn có chắc chắn muốn xóa banner này?")) {
             try {
                 const res = await bannerService.deleteBanner(id);
-                if (res.code === "success") {
+                if (res.code === 200 || res.code === 201 || res.code === "success") {
                     toast.success("Xóa thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchBanners(params);

@@ -48,7 +48,7 @@ export default function ModalChangePassword({ isOpen, onClose }: ModalChangePass
                 newPassword: formData.newPassword
             });
 
-            if (res.code === "success") {
+            if (res.code === 200 || res.code === 201 || res.code === "success") {
                 toast.success("Đổi mật khẩu thành công!");
                 onClose();
                 setFormData({ oldPassword: "", newPassword: "", confirmPassword: "" });

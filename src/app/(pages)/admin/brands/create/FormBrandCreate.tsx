@@ -33,7 +33,7 @@ export default function FormBrandCreate() {
         try {
             const formData = new FormData(e.target as HTMLFormElement);
             const res = await brandService.createBrand(formData);
-            if (res.code === "success") {
+            if (res.code === 201) {
                 toast.success("Tạo thương hiệu thành công!");
                 router.push("/admin/brands");
             } else {
@@ -52,7 +52,7 @@ export default function FormBrandCreate() {
             <div className="lg:col-span-1 space-y-6">
                 <AdminCard title="Hình ảnh" subTitle="Logo đại diện cho thương hiệu">
                     <div 
-                        className="group relative aspect-square w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center p-6 shadow-xs"
+                        className="group relative aspect-square w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-indigo-400 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center shadow-xs"
                         onClick={() => fileInputRef.current?.click()}
                     >
                         {previewThumbnail ? (
@@ -61,7 +61,7 @@ export default function FormBrandCreate() {
                                 alt="preview" 
                                 width={400} 
                                 height={400} 
-                                className="w-full h-full object-contain rounded-xl" 
+                                className="w-full h-full object-cover" 
                             />
                         ) : (
                             <>
@@ -73,7 +73,7 @@ export default function FormBrandCreate() {
                                 </p>
                             </>
                         )}
-                        <div className="absolute inset-0 bg-indigo-900/40 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity flex items-center justify-center backdrop-blur-xs">
+                        <div className="absolute inset-0 bg-indigo-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-xs">
                             <Camera className="w-8 h-8 text-white animate-in zoom-in-75 duration-300" />
                         </div>
                         <input 

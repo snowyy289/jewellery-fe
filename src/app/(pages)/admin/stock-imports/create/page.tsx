@@ -23,14 +23,21 @@ export default function CreateStockImportPage() {
                 productService.getProducts({ status: "active", limit: 1000 })
             ]);
 
-            if (suppliersRes.code === "success") {
-                setSuppliers(suppliersRes.suppliers);
+            console.log("🏢 Suppliers response:", suppliersRes);
+            console.log("📦 Products response:", productsRes);
+
+            if (suppliersRes.code === 200 || suppliersRes.code === "success") {
+                const suppliersList = suppliersRes.suppliers || suppliersRes.data || [];
+                console.log("✅ Setting suppliers:", suppliersList);
+                setSuppliers(suppliersList);
             }
-            if (productsRes.code === "success") {
-                setProducts(productsRes.products);
+            if (productsRes.code === 200 || productsRes.code === "success") {
+                const productsList = productsRes.products || productsRes.data || [];
+                console.log("✅ Setting products:", productsList);
+                setProducts(productsList);
             }
         } catch (error) {
-            console.error(error);
+            console.error("💥 Fetch data error:", error);
         } finally {
             setIsFetching(false);
         }

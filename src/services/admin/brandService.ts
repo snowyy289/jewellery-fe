@@ -14,12 +14,12 @@ export const brandService = {
     },
 
     updateBrand: async (id: string, data: FormData) => {
-        const response = await axiosInstance.patch<SingleBrandResponse>(`/api/admin/brands/edit/${id}`, data);
+        const response = await axiosInstance.patch<SingleBrandResponse>(`/admin/brands/edit/${id}`, data);
         return response.data;
     },
 
     deleteBrand: async (id: string) => {
-        const response = await axiosInstance.delete<GenericResponse>(`/api/admin/brands/delete/${id}`);
+        const response = await axiosInstance.delete<GenericResponse>(`/admin/brands/delete/${id}`);
         return response.data;
     }
 };

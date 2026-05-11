@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -19,9 +20,9 @@ export default function Search() {
         } else {
             params.delete("keyword");
         }
-        params.set("page", "1"); // Reset to page 1 on search
+        params.set("page", "1"); 
         router.push(`${pathname}?${params.toString()}`);
-    }, [debouncedValue]); // ✅ Chỉ theo dõi debouncedValue
+    }, [debouncedValue]); 
 
     return (
         <div className="relative group w-full sm:w-80">

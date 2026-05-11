@@ -23,12 +23,12 @@ export default function RichTextEditor({
     required = false,
     height = 400
 }: RichTextEditorProps) {
-    const editorRef = useRef<any>(null);
+    const editorRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [isMounted, setIsMounted] = useState(false);
 
     // Only render editor on client-side to avoid hydration mismatch
     useEffect(() => {
-        setIsMounted(true);
+        setIsMounted(true); // eslint-disable-line react-hooks/set-state-in-effect
     }, []);
 
     const handleEditorChange = (content: string) => {

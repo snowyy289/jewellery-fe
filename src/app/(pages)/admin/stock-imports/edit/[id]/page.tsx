@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -30,17 +31,27 @@ export default function EditStockImportPage() {
                 productService.getProducts({ status: "active", limit: 1000 })
             ]);
 
-            if (stockImportRes.code === "success") {
-                setStockImport(stockImportRes.stockImport);
+            console.log("📦 Stock import response:", stockImportRes);
+            console.log("🏢 Suppliers response:", suppliersRes);
+            console.log("📦 Products response:", productsRes);
+
+            if (stockImportRes.code === 200 || stockImportRes.code === "success") {
+                const importData = stockImportRes.stockImport || stockImportRes.data;
+                console.log("✅ Setting stock import:", importData);
+                setStockImport(importData || null);
             }
-            if (suppliersRes.code === "success") {
-                setSuppliers(suppliersRes.suppliers);
+            if (suppliersRes.code === 200 || suppliersRes.code === "success") {
+                const suppliersList = suppliersRes.suppliers || suppliersRes.data || [];
+                console.log("✅ Setting suppliers:", suppliersList);
+                setSuppliers(suppliersList);
             }
-            if (productsRes.code === "success") {
-                setProducts(productsRes.products);
+            if (productsRes.code === 200 || productsRes.code === "success") {
+                const productsList = productsRes.products || productsRes.data || [];
+                console.log("✅ Setting products:", productsList);
+                setProducts(productsList);
             }
         } catch (error) {
-            console.error(error);
+            console.error("💥 Fetch data error:", error);
         } finally {
             setIsFetching(false);
         }

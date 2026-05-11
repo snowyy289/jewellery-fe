@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { GenericResponse } from "./auth";
 import { Pagination } from "./pagination";
 
@@ -28,13 +30,15 @@ export interface Product {
 }
 
 export interface ProductResponse extends GenericResponse {
-  products: Product[];
+  products?: Product[]; // Optional vì backend có thể trả về 'data'
+  data?: Product[]; // Backend trả về 'data' thay vì 'products'
   pagination?: Pagination;
   filterStatus?: any[];
 }
 
 export interface SingleProductResponse extends GenericResponse {
-  product: Product;
+  product?: Product; // Optional vì backend có thể trả về 'data'
+  data?: Product; // Backend có thể trả về 'data' thay vì 'product'
 }
 
 export interface ProductCreateRequest {

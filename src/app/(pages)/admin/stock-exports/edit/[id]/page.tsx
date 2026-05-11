@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -26,14 +27,21 @@ export default function EditStockExportPage() {
                 productService.getProducts({ status: "active", limit: 1000 })
             ]);
 
-            if (stockExportRes.code === "success") {
-                setStockExport(stockExportRes.stockExport);
+            console.log("📦 Stock export response:", stockExportRes);
+            console.log("📦 Products response:", productsRes);
+
+            if (stockExportRes.code === 200 || stockExportRes.code === "success") {
+                const exportData = stockExportRes.stockExport || stockExportRes.data;
+                console.log("✅ Setting stock export:", exportData);
+                setStockExport(exportData || null);
             }
-            if (productsRes.code === "success") {
-                setProducts(productsRes.products);
+            if (productsRes.code === 200 || productsRes.code === "success") {
+                const productsList = productsRes.products || productsRes.data || [];
+                console.log("✅ Setting products:", productsList);
+                setProducts(productsList);
             }
         } catch (error) {
-            console.error(error);
+            console.error("💥 Fetch data error:", error);
         } finally {
             setIsFetching(false);
         }

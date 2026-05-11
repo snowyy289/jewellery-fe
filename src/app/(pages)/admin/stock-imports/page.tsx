@@ -29,8 +29,11 @@ function StockImportsContent() {
         setIsLoading(true);
         try {
             const res = await stockImportService.getStockImports(params);
-            if (res.code === "success") {
-                setImports(res.imports);
+            console.log("📦 Stock imports response:", res);
+            if (res.code === 200) {
+                const importsList = res.data || res.imports || [];
+                console.log("✅ Setting imports:", importsList);
+                setImports(importsList);
                 if (res.pagination) {
                     setPagination({
                         currentPage: res.pagination.currentPage,
@@ -38,8 +41,8 @@ function StockImportsContent() {
                     });
                 }
             }
-        } catch {
-            console.error("Fetch stock imports error");
+        } catch (error) {
+            console.error("💥 Fetch stock imports error:", error);
         } finally {
             setIsLoading(false);
         }
@@ -49,7 +52,7 @@ function StockImportsContent() {
         if (confirm("Xác nhận phiếu nhập kho sẽ cập nhật số lượng tồn kho. Bạn chắc chắn chứ?")) {
             try {
                 const res = await stockImportService.confirmStockImport(id);
-                if (res.code === "success") {
+                if (res.code === 200) {
                     toast.success("Xác nhận thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchImports(params);
@@ -66,7 +69,7 @@ function StockImportsContent() {
         if (confirm("Hủy phiếu nhập kho sẽ hoàn lại số lượng tồn kho (nếu đã xác nhận). Bạn chắc chắn chứ?")) {
             try {
                 const res = await stockImportService.cancelStockImport(id);
-                if (res.code === "success") {
+                if (res.code === 200) {
                     toast.success("Hủy phiếu thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchImports(params);
@@ -83,7 +86,7 @@ function StockImportsContent() {
         if (confirm("Xóa phiếu nhập kho này? Chỉ có thể xóa phiếu ở trạng thái nháp.")) {
             try {
                 const res = await stockImportService.deleteStockImport(id);
-                if (res.code === "success") {
+                if (res.code === 200) {
                     toast.success("Xóa thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchImports(params);

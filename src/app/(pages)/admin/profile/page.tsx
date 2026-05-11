@@ -20,11 +20,14 @@ export default function ProfilePage() {
         setIsLoading(true);
         try {
             const res = await profileService.getProfile();
-            if (res.code === "success") {
-                setUser(res.user);
+            console.log("👤 Profile response:", res);
+            if (res.code === 200 || res.code === "success") {
+                const userData = res.user || res.data || null;
+                console.log("✅ Setting user:", userData);
+                setUser(userData);
             }
-        } catch {
-            console.error("Fetch profile error");
+        } catch (error) {
+            console.error("💥 Fetch profile error:", error);
         } finally {
             setIsLoading(false);
         }

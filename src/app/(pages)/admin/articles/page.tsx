@@ -30,8 +30,8 @@ function ArticlesContent() {
         setIsLoading(true);
         try {
             const res = await articleService.getArticles(params);
-            if (res.code === "success") {
-                setArticles(res.articles);
+            if (res.code === 200 || res.code === 201 || res.code === "success") {
+                setArticles(res.articles || res.data || []);
                 if (res.pagination) {
                     setPagination({
                         currentPage: res.pagination.currentPage,
@@ -50,7 +50,7 @@ function ArticlesContent() {
         if (confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
             try {
                 const res = await articleService.deleteArticle(id);
-                if (res.code === "success") {
+                if (res.code === 200 || res.code === 201 || res.code === "success") {
                     toast.success("Xóa thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchArticles(params);

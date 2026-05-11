@@ -3,7 +3,7 @@ import { User, GenericResponse } from "@/types/auth";
 
 export const profileService = {
     getProfile: async () => {
-        const response = await axiosInstance.get<{ code: string; user: User }>("/admin/my-profile");
+        const response = await axiosInstance.get<{ code: string | number; user?: User; data?: User }>("/admin/my-profile");
         return response.data;
     },
 

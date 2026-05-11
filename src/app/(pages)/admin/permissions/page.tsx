@@ -21,8 +21,8 @@ export default function PermissionsPage() {
         setIsLoading(true);
         try {
             const res = await permissionService.getPermissions();
-            if (res.code === "success") {
-                setPermissions(res.permissions);
+            if (res.code === 200) {
+                setPermissions(res.data);
             }
         } catch {
             console.error("Fetch permissions error");

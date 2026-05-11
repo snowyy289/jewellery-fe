@@ -18,10 +18,12 @@ export interface Category {
 }
 
 export interface CategoryResponse extends GenericResponse {
-  categories: Category[];
+  categories?: Category[]; // Optional vì backend có thể trả về 'data'
+  data?: Category[]; // Backend trả về 'data' thay vì 'categories'
   pagination?: Pagination;
 }
 
 export interface SingleCategoryResponse extends GenericResponse {
-  category: Category;
+  category?: Category;
+  data?: Category;
 }

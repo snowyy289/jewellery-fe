@@ -36,8 +36,13 @@ function RolesContent() {
                 permissionService.getPermissions()
             ]);
 
-            if (rolesRes.code === "success") {
-                setRoles(rolesRes.roles);
+            console.log("🔐 Roles response:", rolesRes);
+            console.log("🔑 Permissions response:", permsRes);
+
+            if (rolesRes.code === 200 || rolesRes.code === "success") {
+                const rolesList = rolesRes.data || rolesRes.roles || [];
+                console.log("✅ Setting roles:", rolesList);
+                setRoles(rolesList);
                 if(rolesRes.pagination) {
                     setPagination({
                         currentPage: rolesRes.pagination.currentPage,
@@ -45,11 +50,13 @@ function RolesContent() {
                     });
                 }
             }
-            if (permsRes.code === "success") {
-                setAllPermissions(permsRes.permissions);
+            if (permsRes.code === 200 || permsRes.code === "success") {
+                const permsList = permsRes.data || permsRes.permissionList || [];
+                console.log("✅ Setting permissions:", permsList);
+                setAllPermissions(permsList);
             }
-        } catch {
-            console.error("Fetch data error");
+        } catch (error) {
+            console.error("💥 Fetch data error:", error);
         } finally {
             setIsLoading(false);
         }
@@ -59,7 +66,7 @@ function RolesContent() {
         if (confirm("Bạn có chắc chắn muốn xóa nhóm quyền này?")) {
             try {
                 const res = await roleService.deleteRole(id);
-                if (res.code === "success") {
+                if (res.code === 200 || res.code === "success") {
                     toast.success("Xóa thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchRoles(params);

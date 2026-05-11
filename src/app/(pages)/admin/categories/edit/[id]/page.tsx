@@ -17,19 +17,32 @@ export default function EditCategoryPage() {
 
     const fetchData = useCallback(async () => {
         try {
+            console.log("🔍 [EDIT] Fetching categories...");
             const res = await categoryService.getCategories();
-            if (res.code === "success") {
-                setCategories(res.categories.filter((cat: Category) => cat._id !== id));
-                const found = res.categories.find((cat: Category) => cat._id === id);
+            console.log("📦 [EDIT] Response:", res);
+            console.log("📊 [EDIT] Response code:", res.code, "Type:", typeof res.code);
+            
+            if (res.code === 200) {
+                console.log("✅ [EDIT] Code is 200, setting data...");
+                // Backend trả về 'data' chứ không phải 'categories'
+                const categoriesList = res.data || res.categories || [];
+                console.log("📋 [EDIT] Categories list:", categoriesList);
+                
+                setCategories(categoriesList.filter((cat: Category) => cat._id !== id));
+                const found = categoriesList.find((cat: Category) => cat._id === id);
                 if (found) {
+                    console.log("✅ [EDIT] Found category:", found);
                     setCategory(found);
                 } else {
+                    console.log("❌ [EDIT] Category not found with id:", id);
                     toast.error("Không tìm thấy danh mục!");
                     router.push("/admin/categories");
                 }
+            } else {
+                console.log("❌ [EDIT] Code is NOT 200, got:", res.code);
             }
-        } catch {
-            console.error("Fetch data error");
+        } catch (error) {
+            console.error("💥 [EDIT] Fetch data error:", error);
         } finally {
             setIsFetching(false);
         }

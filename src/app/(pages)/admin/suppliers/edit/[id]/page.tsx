@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -20,13 +21,16 @@ export default function EditSupplierPage() {
     const fetchSupplier = async () => {
         try {
             const res = await supplierService.getSupplierDetail(id);
-            if (res.code === "success") {
-                setSupplier(res.supplier);
+            console.log("📦 Supplier response:", res);
+            if (res.code === 200 || res.code === "success") {
+                const sup = res.supplier || res.data || null;
+                console.log("✅ Setting supplier:", sup);
+                setSupplier(sup);
             } else {
                 toast.error(res.message);
             }
         } catch (error) {
-            console.error(error);
+            console.error("💥 Fetch supplier error:", error);
             toast.error("Lỗi khi tải dữ liệu!");
         } finally {
             setIsFetching(false);

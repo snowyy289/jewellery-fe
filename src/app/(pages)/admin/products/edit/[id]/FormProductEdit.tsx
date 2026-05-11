@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Camera, Package, Activity, Save, X, DollarSign, Hash, Tag, Star, Layers, Edit3 } from "lucide-react";
+import { Plus, Camera, Activity, Save, X, DollarSign, Hash, Tag, Star, Layers, Edit3 } from "lucide-react";
 import Image from "next/image";
 import Button from "@/components/button/Button";
 import Input from "@/components/input/Input";
@@ -13,6 +13,7 @@ import { Product } from "@/types/product";
 import { Category } from "@/types/category";
 import { Brand } from "@/types/brand";
 import { toast } from "sonner";
+import { createTree } from "@/utils/treeHelper";
 
 interface FormProductEditProps {
     product: Product | null;
@@ -28,6 +29,9 @@ export default function FormProductEdit({ product, id, categories, brands }: For
     const [tags, setTags] = useState<string[]>(product?.tags || []);
     const [tagInput, setTagInput] = useState("");
     const [description, setDescription] = useState(product?.description || "");
+
+    // Xây cây category để hiển thị phân cấp
+    const categoryTree = createTree(categories);
     const thumbnailInputRef = useRef<HTMLInputElement>(null);
     const imagesInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
@@ -104,7 +108,7 @@ export default function FormProductEdit({ product, id, categories, brands }: For
             }
 
             const res = await productService.updateProduct(id, formData);
-            if (res.code === "success") {
+            if (res.code === 200) {
                 toast.success("Cập nhật sản phẩm thành công!");
                 router.push("/admin/products");
             } else {
@@ -222,9 +226,9 @@ export default function FormProductEdit({ product, id, categories, brands }: For
                             required
                         >
                             <option value="">-- Chọn danh mục --</option>
-                            {categories.map(cat => (
+                            {categoryTree.map(cat => (
                                 <option key={cat._id} value={cat._id}>
-                                    {cat.title}
+                                    {"--".repeat(cat.level)} {cat.title}
                                 </option>
                             ))}
                         </Select>
@@ -290,7 +294,7 @@ export default function FormProductEdit({ product, id, categories, brands }: For
                             label="Tên sản phẩm"
                             name="title"
                             defaultValue={product?.title}
-                            placeholder="Ví dụ: Kem dưỡng ẩm Vitamin C..."
+                            placeholder="Ví dụ: Nhẫn vàng 18K, Dây chuyền bạc..."
                             icon={<Edit3 className="w-4 h-4" />}
                             required
                         />

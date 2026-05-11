@@ -29,17 +29,20 @@ function StockExportsContent() {
         setIsLoading(true);
         try {
             const res = await stockExportService.getStockExports(params);
-            if (res.code === "success") {
-                setExports(res.stockExports);
+            console.log("📦 Stock exports response:", res);
+            if (res.code === 200 || res.code === "success") {
+                const exportsList = res.data || res.stockExports || [];
+                console.log("✅ Setting exports:", exportsList);
+                setExports(exportsList);
                 if (res.pagination) {
                     setPagination({
-                        currentPage: res.pagination.page,
-                        totalPage: res.pagination.totalPages
+                        currentPage: res.pagination.page || res.pagination.currentPage || 1,
+                        totalPage: res.pagination.totalPages || res.pagination.totalPage || 1
                     });
                 }
             }
-        } catch {
-            console.error("Fetch stock exports error");
+        } catch (error) {
+            console.error("💥 Fetch stock exports error:", error);
         } finally {
             setIsLoading(false);
         }
@@ -49,7 +52,7 @@ function StockExportsContent() {
         if (confirm("Xác nhận phiếu xuất kho sẽ trừ số lượng tồn kho. Bạn chắc chắn chứ?")) {
             try {
                 const res = await stockExportService.confirmStockExport(id);
-                if (res.code === "success") {
+                if (res.code === 200) {
                     toast.success("Xác nhận thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchExports(params);
@@ -66,7 +69,7 @@ function StockExportsContent() {
         if (confirm("Hủy phiếu xuất kho sẽ hoàn lại số lượng tồn kho (nếu đã xác nhận). Bạn chắc chắn chứ?")) {
             try {
                 const res = await stockExportService.cancelStockExport(id);
-                if (res.code === "success") {
+                if (res.code === 200) {
                     toast.success("Hủy phiếu thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchExports(params);
@@ -83,7 +86,7 @@ function StockExportsContent() {
         if (confirm("Xóa phiếu xuất kho này? Chỉ có thể xóa phiếu ở trạng thái nháp.")) {
             try {
                 const res = await stockExportService.deleteStockExport(id);
-                if (res.code === "success") {
+                if (res.code === 200) {
                     toast.success("Xóa thành công!");
                     const params = Object.fromEntries(searchParams.entries());
                     fetchExports(params);

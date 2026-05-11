@@ -42,15 +42,30 @@ axiosInstance.interceptors.response.use(
     // Xử lý lỗi global
     if (typeof window !== "undefined") {
       const status = error.response?.status;
+      const requestUrl = error.config?.url || "";
 
       // Token hết hạn hoặc không hợp lệ
       if (status === 401) {
         console.warn("Unauthorized - Token hết hạn hoặc sai");
 
-        localStorage.removeItem("token");
+        // KHÔNG redirect nếu đang ở trang login hoặc auth endpoints
+        const isAuthEndpoint = requestUrl.includes("/auth/login") || 
+                               requestUrl.includes("/auth/forgot-password") ||
+                               requestUrl.includes("/auth/otp-password") ||
+                               requestUrl.includes("/auth/reset-password");
+        
+        if (!isAuthEndpoint) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          document.cookie = "token=; path=/; max-age=0";
 
-        // redirect về login
-        window.location.href = "/login";
+          // Redirect về admin login nếu đang ở admin area
+          if (window.location.pathname.startsWith("/admin")) {
+            window.location.href = "/admin/login";
+          } else {
+            window.location.href = "/login";
+          }
+        }
       }
 
       // Server error

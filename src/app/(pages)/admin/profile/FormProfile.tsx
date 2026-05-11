@@ -39,7 +39,7 @@ export default function FormProfile({ user, onUpdate }: FormProfileProps) {
         try {
             const formData = new FormData(e.target as HTMLFormElement);
             const res = await profileService.updateProfile(formData);
-            if (res.code === "success") {
+            if (res.code === 200 || res.code === 201 || res.code === "success") {
                 toast.success("Cập nhật thông tin thành công!");
                 onUpdate();
                 const userData = localStorage.getItem("user");
