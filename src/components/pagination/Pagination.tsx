@@ -21,26 +21,54 @@ export default function Pagination({ totalPage, currentPage }: PaginationProps) 
         router.push(`${pathname}?${params.toString()}`);
     };
 
+    const renderButton = (i: number) => (
+        <button
+            key={i}
+            onClick={() => changePage(i)}
+            className={`
+                w-8 h-8 rounded-lg text-xs font-bold transition-all flex items-center justify-center
+                ${
+                    currentPage === i
+                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
+                        : "text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+                }
+            `}
+        >
+            {i}
+        </button>
+    );
+
     const renderPages = () => {
         const pages = [];
-        for (let i = 1; i <= totalPage; i++) {
-            pages.push(
-                <button
-                    key={i}
-                    onClick={() => changePage(i)}
-                    className={`
-                        w-8 h-8 rounded-lg text-xs font-bold transition-all
-                        ${
-                            currentPage === i
-                                ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
-                                : "text-slate-500 hover:bg-slate-100 hover:text-slate-800"
-                        }
-                    `}
-                >
-                    {i}
-                </button>
-            );
+        
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPage, currentPage + 2);
+        
+        if (currentPage <= 3) {
+            endPage = Math.min(totalPage, 5);
         }
+        if (currentPage >= totalPage - 2) {
+            startPage = Math.max(1, totalPage - 4);
+        }
+
+        if (startPage > 1) {
+            pages.push(renderButton(1));
+            if (startPage > 2) {
+                pages.push(<span key="dots-1" className="w-8 h-8 flex items-center justify-center text-slate-400">...</span>);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            pages.push(renderButton(i));
+        }
+
+        if (endPage < totalPage) {
+            if (endPage < totalPage - 1) {
+                pages.push(<span key="dots-2" className="w-8 h-8 flex items-center justify-center text-slate-400">...</span>);
+            }
+            pages.push(renderButton(totalPage));
+        }
+
         return pages;
     };
 

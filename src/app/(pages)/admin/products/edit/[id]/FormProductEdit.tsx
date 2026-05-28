@@ -102,10 +102,8 @@ export default function FormProductEdit({ product, id, categories, brands }: For
                 formData.append("tags", JSON.stringify(tags));
             }
 
-            // Add existing images that weren't removed
-            if (previewImages.length > 0) {
-                formData.append("existingImages", JSON.stringify(previewImages));
-            }
+            // Always append existingImages so the backend knows to clear them if empty
+            formData.append("existingImages", JSON.stringify(previewImages));
 
             const res = await productService.updateProduct(id, formData);
             if (res.code === 200) {

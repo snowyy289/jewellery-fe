@@ -2,7 +2,7 @@
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Users, Edit2, Trash2, Plus, UserCheck, UserX, Shield } from "lucide-react";
 import Button from "@/components/button/Button";
 import { AdminPageHeader, AdminCard } from "@/components/layouts/admin/shared";
@@ -15,6 +15,7 @@ import Pagination from "@/components/pagination/Pagination";
 
 function UsersContent() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const [users, setUsers] = useState<AdminUser[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [pagination, setPagination] = useState({
@@ -155,7 +156,11 @@ function UsersContent() {
                                 </tr>
                             ) : (
                                 users.map((item) => (
-                                    <tr key={item._id} className="group hover:bg-indigo-50/30 transition-all duration-300">
+                                    <tr 
+                                        key={item._id} 
+                                        className="group hover:bg-indigo-50/30 transition-all duration-300 cursor-pointer"
+                                        onClick={() => router.push(`/admin/users/${item._id}`)}
+                                    >
                                         {/* Avatar + Name */}
                                         <td className="px-8 py-4">
                                             <div className="flex items-center gap-4">
@@ -230,7 +235,7 @@ function UsersContent() {
                                         </td>
 
                                         {/* Actions */}
-                                        <td className="px-8 py-4">
+                                        <td className="px-8 py-4" onClick={(e) => e.stopPropagation()}>
                                             <div className="flex items-center justify-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
                                                 <Link href={`/admin/users/edit/${item._id}`}>
                                                     <button className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:bg-white hover:text-indigo-600 hover:shadow-md border border-transparent hover:border-slate-100 transition-all">
@@ -238,7 +243,7 @@ function UsersContent() {
                                                     </button>
                                                 </Link>
                                                 <button
-                                                    onClick={() => handleDelete(item._id, item.fullName)}
+                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(item._id, item.fullName); }}
                                                     className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:bg-white hover:text-rose-600 hover:shadow-md border border-transparent hover:border-slate-100 transition-all"
                                                 >
                                                     <Trash2 className="w-4 h-4" />

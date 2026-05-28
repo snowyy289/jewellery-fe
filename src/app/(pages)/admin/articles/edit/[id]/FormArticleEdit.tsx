@@ -48,7 +48,7 @@ export default function FormArticleEdit({ article, categories }: FormArticleEdit
         setIsLoading(true);
         try {
             const formData = new FormData(e.target as HTMLFormElement);
-            formData.append("content", content);
+            formData.set("content", content);
             
             const res = await articleService.updateArticle(params.id as string, formData);
             if (res.code === "success") {

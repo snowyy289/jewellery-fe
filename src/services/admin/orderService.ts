@@ -60,5 +60,13 @@ export const orderService = {
       responseType: 'blob'
     });
     return response.data;
+  },
+
+  // Get revenue chart data
+  getRevenueChartData: async (from_date?: string, to_date?: string, group_by?: 'day' | 'month' | 'year') => {
+    const response = await axiosInstance.get("/admin/orders/revenue/chart", {
+      params: { from_date, to_date, group_by }
+    });
+    return response.data;
   }
 };

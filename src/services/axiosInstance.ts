@@ -14,7 +14,10 @@ axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Chỉ chạy ở client
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("token");
+      const isClientApi = config.url?.includes("/client");
+      const token = isClientApi 
+        ? localStorage.getItem("client_token") 
+        : localStorage.getItem("token");
 
       if (token) {
         // đảm bảo headers tồn tại
@@ -57,6 +60,9 @@ axiosInstance.interceptors.response.use(
         if (!isAuthEndpoint) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
+          localStorage.removeItem("client_token");
+          localStorage.removeItem("client_user");
+          localStorage.removeItem("cart_session_id");
           document.cookie = "token=; path=/; max-age=0";
 
           // Redirect về admin login nếu đang ở admin area

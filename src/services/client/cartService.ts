@@ -72,6 +72,28 @@ export const cartService = {
     return response.data;
   },
 
+  // Update item selection
+  updateItemSelection: async (productId: string, selected: boolean): Promise<CartResponse> => {
+    const sessionId = getSessionId();
+    const response = await axiosInstance.patch(`/client/cart/item-selection/${productId}`, { selected }, {
+      headers: {
+        'x-session-id': sessionId
+      }
+    });
+    return response.data;
+  },
+
+  // Select/Deselect all items
+  selectAllItems: async (selected: boolean): Promise<CartResponse> => {
+    const sessionId = getSessionId();
+    const response = await axiosInstance.patch(`/client/cart/select-all`, { selected }, {
+      headers: {
+        'x-session-id': sessionId
+      }
+    });
+    return response.data;
+  },
+
   // Clear cart
   clearCart: async (): Promise<CartResponse> => {
     const sessionId = getSessionId();
@@ -87,6 +109,28 @@ export const cartService = {
   validateStock: async (): Promise<StockValidationResponse> => {
     const sessionId = getSessionId();
     const response = await axiosInstance.get("/client/cart/validate-stock", {
+      headers: {
+        'x-session-id': sessionId
+      }
+    });
+    return response.data;
+  },
+
+  // Apply Voucher
+  applyVoucher: async (voucherCode: string): Promise<CartResponse> => {
+    const sessionId = getSessionId();
+    const response = await axiosInstance.post("/client/cart/apply-voucher", { voucher_code: voucherCode }, {
+      headers: {
+        'x-session-id': sessionId
+      }
+    });
+    return response.data;
+  },
+
+  // Remove Voucher
+  removeVoucher: async (): Promise<CartResponse> => {
+    const sessionId = getSessionId();
+    const response = await axiosInstance.post("/client/cart/remove-voucher", {}, {
       headers: {
         'x-session-id': sessionId
       }

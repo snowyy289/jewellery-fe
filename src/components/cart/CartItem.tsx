@@ -13,7 +13,7 @@ interface CartItemProps {
 }
 
 export default function CartItem({ item, readOnly = false }: CartItemProps) {
-  const { updateCart, removeFromCart, loading } = useCart();
+  const { updateCart, removeFromCart, updateItemSelection, loading } = useCart();
   const [quantity, setQuantity] = useState(item.quantity);
 
   const product = item.product_id as Product;
@@ -47,8 +47,28 @@ export default function CartItem({ item, readOnly = false }: CartItemProps) {
     }
   };
 
+  const handleToggleSelection = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      await updateItemSelection(productId, e.target.checked);
+    } catch (error) {
+      console.log(error);
+      alert("Failed to update item selection");
+    }
+  };
+
   return (
     <div className={`flex gap-4 p-4 border rounded-lg bg-white ${readOnly ? 'border-none p-2' : ''}`}>
+      {!readOnly && (
+        <div className="flex items-center">
+          <input 
+            type="checkbox"
+            checked={item.selected !== false} // Default to true
+            onChange={handleToggleSelection}
+            disabled={loading}
+            className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
+          />
+        </div>
+      )}
       {/* Product Image */}
       <Link href={`/products/${product.slug || productId}`} className="shrink-0">
         <div className={`relative ${readOnly ? 'w-16 h-16' : 'w-24 h-24'} rounded-lg overflow-hidden`}>

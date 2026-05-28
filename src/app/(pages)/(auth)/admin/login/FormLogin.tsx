@@ -56,9 +56,10 @@ export default function FormLogin() {
                 console.log("❌ [LOGIN] Expected: 200, Got:", res.code);
                 toast.error(res.message || "Đăng nhập thất bại!");
             }
-        } catch (error) {
-            console.error("💥 [LOGIN] Error:", error);
-            toast.error("Lỗi kết nối Server!");
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || "Lỗi kết nối Server!";
+            console.log("💥 [LOGIN] Error:", errorMessage);
+            toast.error(errorMessage);
         } finally {
             setIsLoading(false);
         }

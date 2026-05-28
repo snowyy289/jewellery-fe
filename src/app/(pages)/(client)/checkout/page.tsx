@@ -38,12 +38,14 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Redirect if cart is empty
+  const selectedItems = cart?.items.filter(item => item.selected !== false) || [];
+
+  // Redirect if no items selected
   useEffect(() => {
-    if (!cartLoading && (!cart || cart.items.length === 0)) {
+    if (!cartLoading && selectedItems.length === 0) {
       router.push('/cart');
     }
-  }, [cart, cartLoading, router]);
+  }, [cart, cartLoading, router, selectedItems.length]);
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof ShippingAddress, string>> = {};
@@ -88,7 +90,12 @@ export default function CheckoutPage() {
         customer_note: customerNote || undefined
       });
 
-      const order = orderResponse.data;
+      const order = orderResponse.data || (orderResponse as any).order;
+      
+      if (!order || !order._id) {
+        console.error("Invalid order response:", orderResponse);
+        throw new Error("Không nhận được thông tin đơn hàng từ hệ thống. Vui lòng thử lại!");
+      }
 
       // Step 2: Handle payment based on method
       if (paymentMethod === 'cod') {
@@ -97,28 +104,41 @@ export default function CheckoutPage() {
       } else {
         // Online payment: Create payment and redirect to gateway
         try {
+          console.log('[FE CHECKOUT] Calling paymentService.createPayment with:', {
+            order_id: order._id,
+            payment_method: paymentMethod
+          });
           const paymentResponse = await paymentService.createPayment({
             order_id: order._id,
             payment_method: paymentMethod
           });
+          console.log('[FE CHECKOUT] paymentResponse raw:', paymentResponse);
+          console.log('[FE CHECKOUT] paymentResponse stringified:', JSON.stringify(paymentResponse));
 
-          const { paymentUrl } = paymentResponse.data;
+          const { paymentUrl } = paymentResponse.data || (paymentResponse as any);
+          console.log('[FE CHECKOUT] Destructured paymentUrl:', paymentUrl);
 
           if (paymentUrl) {
+            console.log('[FE CHECKOUT] Redirecting to:', paymentUrl);
             // Redirect to payment gateway
             window.location.href = paymentUrl;
           } else {
-            throw new Error('Payment URL not received');
+            console.error('[FE CHECKOUT] No paymentUrl returned. paymentResponse:', paymentResponse);
+            throw new Error('Không nhận được đường dẫn thanh toán');
           }
         } catch (paymentError: any) {
-          console.error('Payment creation error:', paymentError);
+          console.error('[FE CHECKOUT] Payment creation error:', paymentError);
+          if (paymentError.response) {
+            console.error('[FE CHECKOUT] Payment response error data:', paymentError.response.data);
+            console.error('[FE CHECKOUT] Payment response error status:', paymentError.response.status);
+          }
           // If payment creation fails, still show order but with error
           router.push(`/orders/${order.order_code}?payment=error`);
         }
       }
     } catch (error: any) {
       console.error('Checkout error:', error);
-      setSubmitError(error.response?.data?.message || 'Đặt hàng thất bại. Vui lòng thử lại.');
+      setSubmitError(error.response?.data?.message || error.message || 'Đặt hàng thất bại. Vui lòng thử lại.');
     } finally {
       setSubmitting(false);
     }
@@ -135,7 +155,7 @@ export default function CheckoutPage() {
     );
   }
 
-  if (!cart || cart.items.length === 0) {
+  if (!cart || selectedItems.length === 0) {
     return null;
   }
 
@@ -217,8 +237,8 @@ export default function CheckoutPage() {
 
                 {/* Order Items */}
                 <div className="border-t border-b border-gray-200 py-4 max-h-96 overflow-y-auto">
-                  {cart.items.map((item) => (
-                    <CartItem key={item.product_id.toString()} item={item} readOnly />
+                  {selectedItems.map((item, index) => (
+                    <CartItem key={typeof item.product_id === 'string' ? item.product_id : item.product_id?._id || `checkout-item-${index}`} item={item} readOnly />
                   ))}
                 </div>
 

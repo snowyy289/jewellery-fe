@@ -10,7 +10,7 @@ export interface User {
 export interface AuthResponse {
   token: string;
   user?: User;
-  code: string;
+  code: string | number;
   message: string;
 }
 

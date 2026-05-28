@@ -8,10 +8,10 @@ import OrderStatusBadge from "@/components/order/OrderStatusBadge";
 import OrderItem from "@/components/order/OrderItem";
 import OrderTimeline from "@/components/order/OrderTimeline";
 import { Order } from "@/types/order";
-import { 
-  ArrowLeftIcon, 
-  TruckIcon, 
-  CreditCardIcon, 
+import {
+  ArrowLeftIcon,
+  TruckIcon,
+  CreditCardIcon,
   MapPinIcon,
   DocumentTextIcon,
   XCircleIcon,
@@ -52,7 +52,7 @@ export default function OrderDetailPage() {
 
   useEffect(() => {
     fetchOrder();
-    
+
     // Show payment notification if redirected from payment
     if (paymentResult) {
       setShowPaymentNotification(true);
@@ -62,16 +62,12 @@ export default function OrderDetailPage() {
   }, [orderCode, paymentResult, fetchOrder]);
 
   const handleCancelOrder = async () => {
-    if (!cancelReason.trim()) {
-      alert('Vui lòng nhập lý do hủy đơn');
-      return;
-    }
-
     try {
       setCancelling(true);
-      await orderService.cancelOrder(orderCode, { reason: cancelReason });
+      await orderService.cancelOrder(orderCode, { reason: cancelReason || 'Khách hàng yêu cầu hủy' });
       setShowCancelModal(false);
       setCancelReason('');
+      alert('Hủy đơn hàng thành công!');
       // Refresh order data
       await fetchOrder();
     } catch (err: unknown) {
@@ -110,7 +106,7 @@ export default function OrderDetailPage() {
     }
   };
 
-  const canCancelOrder = order && ['pending', 'confirmed'].includes(order.status);
+  const canCancelOrder = order && ['pending', 'confirmed', 'processing'].includes(order.status);
   const canPayNow = order && order.payment_status === 'pending' && order.payment_method !== 'cod' && order.status !== 'cancelled';
 
   const paymentMethodLabels: Record<string, string> = {
@@ -162,13 +158,12 @@ export default function OrderDetailPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Payment Notification */}
         {showPaymentNotification && paymentResult && (
-          <div className={`mb-6 p-4 rounded-lg border ${
-            paymentResult === 'success' || paymentResult === 'cod'
+          <div className={`mb-6 p-4 rounded-lg border ${paymentResult === 'success' || paymentResult === 'cod'
               ? 'bg-green-50 border-green-200'
               : paymentResult === 'failed'
-              ? 'bg-red-50 border-red-200'
-              : 'bg-yellow-50 border-yellow-200'
-          }`}>
+                ? 'bg-red-50 border-red-200'
+                : 'bg-yellow-50 border-yellow-200'
+            }`}>
             <div className="flex items-start gap-3">
               {paymentResult === 'success' || paymentResult === 'cod' ? (
                 <CheckCircleIcon className="h-6 w-6 text-green-600 shrink-0" />
@@ -178,25 +173,23 @@ export default function OrderDetailPage() {
                 <ExclamationTriangleIcon className="h-6 w-6 text-yellow-600 shrink-0" />
               )}
               <div className="flex-1">
-                <h3 className={`font-semibold ${
-                  paymentResult === 'success' || paymentResult === 'cod'
+                <h3 className={`font-semibold ${paymentResult === 'success' || paymentResult === 'cod'
                     ? 'text-green-900'
                     : paymentResult === 'failed'
-                    ? 'text-red-900'
-                    : 'text-yellow-900'
-                }`}>
+                      ? 'text-red-900'
+                      : 'text-yellow-900'
+                  }`}>
                   {paymentResult === 'success' && 'Thanh toán thành công!'}
                   {paymentResult === 'cod' && 'Đơn hàng đã được tạo!'}
                   {paymentResult === 'failed' && 'Thanh toán thất bại'}
                   {paymentResult === 'error' && 'Có lỗi xảy ra'}
                 </h3>
-                <p className={`text-sm mt-1 ${
-                  paymentResult === 'success' || paymentResult === 'cod'
+                <p className={`text-sm mt-1 ${paymentResult === 'success' || paymentResult === 'cod'
                     ? 'text-green-700'
                     : paymentResult === 'failed'
-                    ? 'text-red-700'
-                    : 'text-yellow-700'
-                }`}>
+                      ? 'text-red-700'
+                      : 'text-yellow-700'
+                  }`}>
                   {paymentResult === 'success' && 'Đơn hàng của bạn đã được thanh toán thành công.'}
                   {paymentResult === 'cod' && 'Bạn sẽ thanh toán khi nhận hàng.'}
                   {paymentResult === 'failed' && 'Giao dịch thanh toán không thành công. Vui lòng thử lại.'}
@@ -247,7 +240,7 @@ export default function OrderDetailPage() {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Sản phẩm</h2>
               <div className="divide-y">
                 {order.items.map((item, index) => (
-                  <OrderItem key={index} item={item} />
+                  <OrderItem key={index} item={item} orderId={order._id} orderStatus={order.status} />
                 ))}
               </div>
             </div>
@@ -255,7 +248,7 @@ export default function OrderDetailPage() {
             {/* Order Timeline */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Lịch sử đơn hàng</h2>
-              <OrderTimeline statusHistory={order.status_history} currentStatus={order.status} />
+              <OrderTimeline statusHistory={order.status_history} />
             </div>
 
             {/* Customer Note */}
@@ -345,11 +338,10 @@ export default function OrderDetailPage() {
                 </div>
                 <div className="flex justify-between">
                   <span>Trạng thái:</span>
-                  <span className={`font-medium ${
-                    order.payment_status === 'paid' ? 'text-green-600' :
-                    order.payment_status === 'failed' ? 'text-red-600' :
-                    'text-yellow-600'
-                  }`}>
+                  <span className={`font-medium ${order.payment_status === 'paid' ? 'text-green-600' :
+                      order.payment_status === 'failed' ? 'text-red-600' :
+                        'text-yellow-600'
+                    }`}>
                     {paymentStatusLabels[order.payment_status] || order.payment_status}
                   </span>
                 </div>
@@ -433,7 +425,7 @@ export default function OrderDetailPage() {
               </button>
               <button
                 onClick={handleCancelOrder}
-                disabled={cancelling || !cancelReason.trim()}
+                disabled={cancelling}
                 className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {cancelling ? 'Đang xử lý...' : 'Xác nhận hủy'}

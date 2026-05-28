@@ -19,8 +19,8 @@ export default function CreateProductPage() {
     const fetchData = async () => {
         try {
             const [catRes, brandRes] = await Promise.all([
-                categoryService.getCategories({ status: "active" }),
-                brandService.getBrands({ status: "active" })
+                categoryService.getCategories({ status: "active", limit: 9999 }),
+                brandService.getBrands({ status: "active", limit: 9999 })
             ]);
             
             // Backend trả về 'data' chứ không phải 'categories' hay 'brands'

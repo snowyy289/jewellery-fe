@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FileText, Edit2, Trash2, Plus, Eye, Star } from "lucide-react";
 import Image from "next/image";
 import Button from "@/components/button/Button";
@@ -14,6 +14,7 @@ import Pagination from "@/components/pagination/Pagination";
 
 function ArticlesContent() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const [articles, setArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [pagination, setPagination] = useState({
@@ -141,7 +142,11 @@ function ArticlesContent() {
                                 </tr>
                             ) : (
                                 articles.map((item) => (
-                                    <tr key={item._id} className="group hover:bg-indigo-50/30 transition-all duration-300">
+                                    <tr 
+                                        key={item._id} 
+                                        className="group hover:bg-indigo-50/30 transition-all duration-300 cursor-pointer"
+                                        onClick={() => router.push(`/admin/articles/${item._id}`)}
+                                    >
                                         <td className="px-8 py-4">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-16 h-12 rounded-xl overflow-hidden shadow-sm group-hover:shadow-indigo-100 transition-all relative">
@@ -201,7 +206,7 @@ function ArticlesContent() {
                                                 {item.published_at ? new Date(item.published_at).toLocaleDateString('vi-VN') : '—'}
                                             </span>
                                         </td>
-                                        <td className="px-8 py-4">
+                                        <td className="px-8 py-4" onClick={(e) => e.stopPropagation()}>
                                             <div className="flex items-center justify-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
                                                 <Link href={`/admin/articles/edit/${item._id}`}>
                                                     <button className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:bg-white hover:text-indigo-600 hover:shadow-md border border-transparent hover:border-slate-100 transition-all">
@@ -209,7 +214,7 @@ function ArticlesContent() {
                                                     </button>
                                                 </Link>
                                                 <button 
-                                                    onClick={() => handleDelete(item._id)}
+                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(item._id); }}
                                                     className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:bg-white hover:text-rose-600 hover:shadow-md border border-transparent hover:border-slate-100 transition-all"
                                                 >
                                                     <Trash2 className="w-4 h-4" />

@@ -24,5 +24,6 @@ export interface SingleRoleResponse extends GenericResponse {
 }
 
 export interface PermissionResponse extends GenericResponse {
-  permissionList: Permission[];
+  permissionList?: Permission[];
+  data?: Permission[];
 }

@@ -20,7 +20,10 @@ import {
   Image,
   FileText,
   Settings,
-  Tags
+  Tags,
+  ClipboardList,
+  Ticket,
+  MessageCircle
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -55,6 +58,18 @@ export default function AdminSidebar({ isCollapsed }: AdminSidebarProps) {
       icon: LayoutDashboard, 
       desc: "Tổng quan hệ thống" 
     },
+    { 
+      href: "/admin/reports/revenue", 
+      label: "Báo Cáo Doanh Thu", 
+      icon: BarChart3, 
+      desc: "Thống kê doanh thu" 
+    },
+    { 
+      href: "/admin/chat", 
+      label: "Live Chat", 
+      icon: MessageCircle, 
+      desc: "Hỗ trợ khách hàng" 
+    },
 
     // Quản lý sản phẩm
     { 
@@ -75,6 +90,18 @@ export default function AdminSidebar({ isCollapsed }: AdminSidebarProps) {
       icon: Package, 
       desc: "Quản lý sản phẩm" 
     },
+    { 
+      href: "/admin/orders", 
+      label: "Đơn Hàng", 
+      icon: ClipboardList, 
+      desc: "Quản lý đơn hàng" 
+    },
+    { 
+      href: "/admin/vouchers", 
+      label: "Mã Giảm Giá", 
+      icon: Ticket, 
+      desc: "Quản lý voucher" 
+    },
     
     // Quản lý kho
     { 
@@ -84,7 +111,6 @@ export default function AdminSidebar({ isCollapsed }: AdminSidebarProps) {
       children: [
         { href: "/admin/suppliers", label: "Nhà Cung Cấp", icon: Users, desc: "Quản lý NCC" },
         { href: "/admin/stock-imports", label: "Phiếu Nhập", icon: PackageCheck, desc: "Nhập hàng" },
-        { href: "/admin/stock-exports", label: "Phiếu Xuất", icon: PackageMinus, desc: "Xuất hàng" },
         { href: "/admin/inventory", label: "Tồn Kho", icon: BarChart3, desc: "Báo cáo tồn" },
       ]
     },
@@ -93,9 +119,10 @@ export default function AdminSidebar({ isCollapsed }: AdminSidebarProps) {
     { 
       label: "Nội Dung Web", 
       icon: FileText, 
-      desc: "Banner & Bài viết",
+      desc: "Banner, Bài viết & BST",
       children: [
         { href: "/admin/banners", label: "Banner", icon: Image, desc: "Quản lý banner" },
+        { href: "/admin/collections", label: "Bộ Sưu Tập", icon: Sparkles, desc: "Quản lý bộ sưu tập" },
         { href: "/admin/articles", label: "Bài Viết", icon: FileText, desc: "Blog & Tin tức" },
       ]
     },

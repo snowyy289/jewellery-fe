@@ -7,7 +7,7 @@ import CartItem from "@/components/cart/CartItem";
 import CartSummary from "@/components/cart/CartSummary";
 
 export default function CartPage() {
-  const { cart, loading, clearCart } = useCart();
+  const { cart, loading, clearCart, selectAllItems } = useCart();
 
   const handleClearCart = async () => {
     if (confirm("Are you sure you want to clear your cart?")) {
@@ -18,6 +18,19 @@ export default function CartPage() {
       }
     }
   };
+
+  const handleSelectAll = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      await selectAllItems(e.target.checked);
+    } catch {
+      alert("Failed to update selection");
+    }
+  };
+
+  // Check if all items are selected
+  const items = cart?.items || [];
+  const isAllSelected = items.length > 0 && items.every(item => item.selected !== false);
+  const selectedCount = items.filter(item => item.selected !== false).length;
 
   if (loading && !cart) {
     return (
@@ -35,7 +48,7 @@ export default function CartPage() {
     );
   }
 
-  if (!cart || cart.items.length === 0) {
+  if (!cart || items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto text-center py-16">
@@ -75,7 +88,12 @@ export default function CartPage() {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Shopping Cart</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold">Shopping Cart</h1>
+          <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+            {selectedCount}/{items.length} selected
+          </span>
+        </div>
         <button
           onClick={handleClearCart}
           disabled={loading}
@@ -88,9 +106,24 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
-          {cart.items.map((item) => (
+          {/* Select All Toggle */}
+          <div className="flex items-center p-4 bg-white border rounded-lg shadow-sm">
+            <input 
+              type="checkbox"
+              id="selectAll"
+              checked={isAllSelected}
+              onChange={handleSelectAll}
+              disabled={loading}
+              className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
+            />
+            <label htmlFor="selectAll" className="ml-3 font-medium text-gray-700 cursor-pointer select-none">
+              Chọn tất cả sản phẩm
+            </label>
+          </div>
+
+          {items.map((item, index) => (
             <CartItem 
-              key={typeof item.product_id === 'string' ? item.product_id : item.product_id._id} 
+              key={typeof item.product_id === 'string' ? item.product_id : item.product_id?._id || `cart-item-${index}`} 
               item={item} 
             />
           ))}

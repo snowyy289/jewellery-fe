@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Tags, Edit2, Trash2, Plus } from "lucide-react";
 import Image from "next/image";
 import Button from "@/components/button/Button";
@@ -15,6 +15,7 @@ import Pagination from "@/components/pagination/Pagination";
 
 function BrandsContent() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const [brands, setBrands] = useState<Brand[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [pagination, setPagination] = useState({
@@ -117,7 +118,11 @@ function BrandsContent() {
                                 </tr>
                             ) : (
                                 brands.map((item) => (
-                                    <tr key={item._id} className="group hover:bg-indigo-50/30 transition-all duration-300">
+                                    <tr 
+                                        key={item._id} 
+                                        className="group hover:bg-indigo-50/30 transition-all duration-300 cursor-pointer"
+                                        onClick={() => router.push(`/admin/brands/${item._id}`)}
+                                    >
                                         <td className="px-8 py-4">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm group-hover:shadow-indigo-100 transition-all bg-white shrink-0">
@@ -190,7 +195,7 @@ function BrandsContent() {
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-4">
+                                        <td className="px-8 py-4" onClick={(e) => e.stopPropagation()}>
                                             <div className="flex items-center justify-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
                                                 <Link href={`/admin/brands/edit/${item._id}`}>
                                                     <button className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:bg-white hover:text-indigo-600 hover:shadow-md border border-transparent hover:border-slate-100 transition-all">
@@ -198,7 +203,7 @@ function BrandsContent() {
                                                     </button>
                                                 </Link>
                                                 <button 
-                                                    onClick={() => handleDelete(item._id)}
+                                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(item._id); }}
                                                     className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:bg-white hover:text-rose-600 hover:shadow-md border border-transparent hover:border-slate-100 transition-all"
                                                 >
                                                     <Trash2 className="w-4 h-4" />

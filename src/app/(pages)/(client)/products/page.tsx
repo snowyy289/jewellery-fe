@@ -1,25 +1,86 @@
 "use client";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { Search, SlidersHorizontal, ChevronDown, Heart, ShoppingBag, Star } from "lucide-react";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Search, SlidersHorizontal, ChevronDown, ShoppingBag, Star, Loader2 } from "lucide-react";
+import { productService } from "@/services/client/productService";
+import { categoryService } from "@/services/client/categoryService";
+import { Product } from "@/types/product";
+import { Category } from "@/types/category";
+import AddToCartButton from "@/components/cart/AddToCartButton";
+import BuyNowButton from "@/components/cart/BuyNowButton";
+import WishlistButton from "@/components/wishlist/WishlistButton";
 
-export default function ProductsPage() {
+function ProductsContent() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const initialKeyword = searchParams.get("keyword") || "";
+
+    const [keyword, setKeyword] = useState(initialKeyword);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [pagination, setPagination] = useState({ currentPage: 1, totalPage: 1 });
+    const [loading, setLoading] = useState(true);
 
-    // Mock Data
-    const products = [
-        { id: 1, title: "Nhẫn Kim Cương Đính Hôn", price: "25.000.000 đ", image: "https://images.unsplash.com/photo-1605100804763-247f661c6e61?auto=format&fit=crop&q=80&w=800", tags: ["Bán chạy"] },
-        { id: 2, title: "Dây Chuyền Vàng Trắng 18K", price: "12.500.000 đ", image: "https://images.unsplash.com/photo-1599643478524-fb66f7ca265b?auto=format&fit=crop&q=80&w=800", tags: ["Mới"] },
-        { id: 3, title: "Bông Tai Sapphire Xanh", price: "8.900.000 đ", image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=800", tags: [] },
-        { id: 4, title: "Vòng Tay Ngọc Trai Tự Nhiên", price: "5.200.000 đ", image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800", tags: ["Khuyến mãi"] },
-        { id: 5, title: "Nhẫn Cưới Vàng Hồng", price: "18.000.000 đ", image: "https://images.unsplash.com/photo-1515562141207-7a8efbc65f60?auto=format&fit=crop&q=80&w=800", tags: [] },
-        { id: 6, title: "Mặt Dây Chuyền Ruby", price: "9.500.000 đ", image: "https://images.unsplash.com/photo-1599643477877-530e11894d3c?auto=format&fit=crop&q=80&w=800", tags: ["Premium"] },
-        { id: 7, title: "Bông Tai Kim Cương Nữ Hoàng", price: "45.000.000 đ", image: "https://images.unsplash.com/photo-1535632787350-4e68ef0ac584?auto=format&fit=crop&q=80&w=800", tags: [] },
-        { id: 8, title: "Lắc Tay Bạc Đính Đá CZ", price: "2.100.000 đ", image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800", tags: ["Bán chạy"] },
-    ];
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                setLoading(true);
+                const currentKeyword = searchParams.get("keyword") || "";
+                const currentCategory = searchParams.get("category") || "";
+                const currentPage = parseInt(searchParams.get("page") || "1");
+                setKeyword(currentKeyword);
+                
+                const [res, catRes] = await Promise.all([
+                    productService.getProducts({ 
+                        keyword: currentKeyword,
+                        category: currentCategory,
+                        page: currentPage
+                    }),
+                    categoryService.getCategories()
+                ]);
 
-    const categories = ["Tất cả", "Nhẫn", "Dây chuyền", "Bông tai", "Lắc tay", "Đồng hồ"];
+                if (res.products) {
+                    setProducts(res.products);
+                } else if (res.data) {
+                    setProducts(res.data);
+                }
+                
+                if (res.pagination) {
+                    setPagination(res.pagination);
+                }
+                
+                if (catRes.code === "success" || catRes.code === 200) {
+                    setCategories(catRes.data || []);
+                }
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProducts();
+    }, [searchParams]);
+
     const materials = ["Vàng 18K", "Vàng trắng", "Bạc 925", "Bạch kim"];
+
+    const generatePagination = () => {
+        const { currentPage, totalPage } = pagination;
+        if (totalPage <= 5) {
+            return Array.from({ length: totalPage }, (_, i) => i + 1);
+        }
+        
+        if (currentPage <= 3) {
+            return [1, 2, 3, 4, '...', totalPage];
+        }
+        
+        if (currentPage >= totalPage - 2) {
+            return [1, '...', totalPage - 3, totalPage - 2, totalPage - 1, totalPage];
+        }
+        
+        return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPage];
+    };
 
     return (
         <div className="bg-slate-50 min-h-screen">
@@ -45,24 +106,37 @@ export default function ProductsPage() {
                     {/* Sidebar Filters */}
                     <div className={`lg:w-1/4 space-y-10 ${isFilterOpen ? "block" : "hidden lg:block"}`}>
                         {/* Search */}
-                        <div className="relative">
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            router.push(`/products?keyword=${encodeURIComponent(keyword)}`);
+                        }} className="relative">
                             <input 
                                 type="text" 
+                                value={keyword}
+                                onChange={(e) => setKeyword(e.target.value)}
                                 placeholder="Tìm kiếm trang sức..." 
                                 className="w-full bg-white border border-slate-200 px-4 py-3 pl-10 focus:outline-none focus:border-amber-500 transition-colors"
                             />
-                            <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                        </div>
+                            <button type="submit" className="absolute left-4 top-1/2 -translate-y-1/2">
+                                <Search className="w-4 h-4 text-slate-400 hover:text-amber-600 transition-colors" />
+                            </button>
+                        </form>
 
                         {/* Category Filter */}
                         <div>
                             <h3 className="text-sm font-bold uppercase tracking-widest text-slate-900 mb-4 border-b border-slate-200 pb-2">Danh mục</h3>
                             <ul className="space-y-3">
-                                {categories.map((cat, idx) => (
-                                    <li key={idx}>
+                                <li>
+                                    <label className="flex items-center gap-3 cursor-pointer group">
+                                        <input type="radio" name="category" className="w-4 h-4 accent-amber-500" checked={!searchParams.get("category")} onChange={() => router.push('/products')} />
+                                        <span className="text-slate-600 group-hover:text-amber-600 transition-colors">Tất cả</span>
+                                    </label>
+                                </li>
+                                {categories.map((cat) => (
+                                    <li key={cat._id}>
                                         <label className="flex items-center gap-3 cursor-pointer group">
-                                            <input type="radio" name="category" className="w-4 h-4 accent-amber-500" defaultChecked={idx === 0} />
-                                            <span className="text-slate-600 group-hover:text-amber-600 transition-colors">{cat}</span>
+                                            <input type="radio" name="category" className="w-4 h-4 accent-amber-500" checked={searchParams.get("category") === cat.title} onChange={() => router.push(`/products?category=${encodeURIComponent(cat.title)}`)} />
+                                            <span className="text-slate-600 group-hover:text-amber-600 transition-colors">{cat.title}</span>
                                         </label>
                                     </li>
                                 ))}
@@ -98,7 +172,12 @@ export default function ProductsPage() {
                     {/* Product Grid */}
                     <div className="lg:w-3/4">
                         <div className="flex justify-between items-center mb-8 bg-white p-4 shadow-sm">
-                            <p className="text-sm text-slate-500 font-medium">Hiển thị <span className="font-bold text-slate-900">8</span> trên tổng số <span className="font-bold text-slate-900">120</span> sản phẩm</p>
+                            <p className="text-sm text-slate-500 font-medium">
+                                Hiển thị <span className="font-bold text-slate-900">{products.length}</span> trên tổng số <span className="font-bold text-slate-900">{products.length}</span> sản phẩm
+                                {searchParams.get("keyword") && (
+                                    <span> cho từ khóa &ldquo;<strong className="text-amber-600">{searchParams.get("keyword")}</strong>&rdquo;</span>
+                                )}
+                            </p>
                             <div className="flex items-center gap-2">
                                 <span className="text-sm text-slate-500 font-medium">Sắp xếp:</span>
                                 <div className="relative">
@@ -113,59 +192,128 @@ export default function ProductsPage() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {products.map((product) => (
-                                <div key={product.id} className="group bg-white rounded-none shadow-sm hover:shadow-xl transition-all duration-300">
-                                    <div className="relative aspect-[4/5] overflow-hidden bg-slate-100">
-                                        <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                        
-                                        {/* Badges */}
-                                        <div className="absolute top-4 left-4 flex flex-col gap-2">
-                                            {product.tags.map((tag, idx) => (
-                                                <span key={idx} className="bg-stone-900 text-white text-[10px] font-bold px-3 py-1 uppercase tracking-wider">
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                        </div>
+                        {loading ? (
+                            <div className="flex justify-center items-center py-20">
+                                <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+                            </div>
+                        ) : products.length === 0 ? (
+                            <div className="text-center py-20 text-slate-500">
+                                Không tìm thấy sản phẩm nào.
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {products.map((product) => (
+                                    <div key={product._id} className="group bg-white rounded-none shadow-sm hover:shadow-xl transition-all duration-300">
+                                        <div className="relative aspect-[4/5] overflow-hidden bg-slate-100">
+                                            <Link href={`/products/${product.slug || product._id}`}>
+                                                <img src={product.thumbnail || "https://images.unsplash.com/photo-1605100804763-247f661c6e61?auto=format&fit=crop&q=80&w=800"} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 cursor-pointer" />
+                                            </Link>
+                                            
+                                            {/* Badges */}
+                                            <div className="absolute top-4 left-4 flex flex-col gap-2">
+                                                {(product.tags || []).map((tag, idx) => (
+                                                    <span key={idx} className="bg-stone-900 text-white text-[10px] font-bold px-3 py-1 uppercase tracking-wider">
+                                                        {tag}
+                                                    </span>
+                                                ))}
+                                                {product.discountPercentage ? (
+                                                    <span className="bg-rose-500 text-white text-[10px] font-bold px-3 py-1 uppercase tracking-wider">
+                                                        -{product.discountPercentage}%
+                                                    </span>
+                                                ) : null}
+                                            </div>
 
-                                        {/* Actions Hover */}
-                                        <div className="absolute top-4 right-4 translate-x-8 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all flex flex-col gap-2">
-                                            <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-700 hover:text-rose-500 shadow-lg transition-colors">
-                                                <Heart className="w-5 h-5" />
-                                            </button>
+                                            {/* Actions Hover */}
+                                            <div className="absolute top-4 right-4 flex flex-col gap-2 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                                                <WishlistButton 
+                                                    productId={product._id} 
+                                                    className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full text-stone-700 hover:text-gold shadow-md transition-colors"
+                                                />
+                                            </div>
+                                            
+                                            {/* Add to cart & Buy now bottom */}
+                                            <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex">
+                                                <AddToCartButton 
+                                                    productId={product._id}
+                                                    className="flex-1 bg-stone-900 text-white font-bold py-3 text-[10px] md:text-sm uppercase tracking-widest flex items-center justify-center gap-1 hover:bg-gold hover:text-stone-900 transition-colors rounded-none border-r border-stone-700"
+                                                >
+                                                    <ShoppingBag className="w-4 h-4" />
+                                                    Giỏ Hàng
+                                                </AddToCartButton>
+                                                <BuyNowButton
+                                                    productId={product._id}
+                                                    className="flex-1 bg-amber-500 hover:bg-amber-600 text-stone-900 font-bold py-3 text-xs md:text-sm uppercase tracking-wider flex items-center justify-center transition-colors rounded-none border-t border-amber-500"
+                                                >
+                                                    Mua Ngay
+                                                </BuyNowButton>
+                                            </div>
                                         </div>
-                                        
-                                        {/* Add to cart bottom */}
-                                        <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                                            <button className="w-full bg-amber-500 hover:bg-amber-600 text-stone-900 font-bold py-4 flex items-center justify-center gap-2 transition-colors">
-                                                <ShoppingBag className="w-5 h-5" />
-                                                Thêm Vào Giỏ
-                                            </button>
+                                        <div className="p-6 text-center">
+                                            <Link href={`/products/${product.slug || product._id}`}>
+                                                <h3 className="text-sm font-bold text-slate-900 mb-2 hover:text-amber-600 transition-colors line-clamp-2">{product.title}</h3>
+                                            </Link>
+                                            <div className="flex items-center justify-center gap-1 mb-3">
+                                                {[1,2,3,4,5].map(i => <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />)}
+                                            </div>
+                                            <p className="text-amber-600 font-black tracking-wide">
+                                                {product.price.toLocaleString('vi-VN')} đ
+                                            </p>
                                         </div>
                                     </div>
-                                    <div className="p-6 text-center">
-                                        <Link href={`/products/${product.id}`}>
-                                            <h3 className="text-sm font-bold text-slate-900 mb-2 hover:text-amber-600 transition-colors line-clamp-2">{product.title}</h3>
-                                        </Link>
-                                        <div className="flex items-center justify-center gap-1 mb-3">
-                                            {[1,2,3,4,5].map(i => <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />)}
-                                        </div>
-                                        <p className="text-amber-600 font-black tracking-wide">{product.price}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
 
                         {/* Pagination */}
-                        <div className="mt-12 flex justify-center gap-2">
-                            <button className="w-10 h-10 flex items-center justify-center bg-stone-900 text-white font-bold">1</button>
-                            <button className="w-10 h-10 flex items-center justify-center bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 font-bold transition-colors">2</button>
-                            <button className="w-10 h-10 flex items-center justify-center bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 font-bold transition-colors">3</button>
-                            <span className="w-10 h-10 flex items-center justify-center text-slate-400">...</span>
-                        </div>
+                        {pagination.totalPage > 1 && (
+                            <div className="mt-12 flex justify-center gap-2">
+                                {generatePagination().map((item, index) => {
+                                    if (item === '...') {
+                                        return (
+                                            <span key={`ellipsis-${index}`} className="w-10 h-10 flex items-center justify-center text-slate-400 font-bold">
+                                                ...
+                                            </span>
+                                        );
+                                    }
+                                    
+                                    const page = item as number;
+                                    const isActive = page === pagination.currentPage;
+                                    
+                                    return (
+                                        <button 
+                                            key={page}
+                                            onClick={() => {
+                                                const currentParams = new URLSearchParams(searchParams.toString());
+                                                currentParams.set("page", page.toString());
+                                                router.push(`/products?${currentParams.toString()}`);
+                                            }}
+                                            className={`w-10 h-10 flex items-center justify-center font-bold transition-colors ${
+                                                isActive 
+                                                    ? "bg-stone-900 text-white" 
+                                                    : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
+                                            }`}
+                                        >
+                                            {page}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function ProductsPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex justify-center items-center py-20 min-h-screen">
+                <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+            </div>
+        }>
+            <ProductsContent />
+        </Suspense>
     );
 }

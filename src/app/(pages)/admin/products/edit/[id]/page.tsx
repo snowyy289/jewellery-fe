@@ -28,8 +28,8 @@ export default function EditProductPage() {
         try {
             const [productRes, categoriesRes, brandsRes] = await Promise.all([
                 productService.getProductDetail(id),
-                categoryService.getCategories({ status: "active" }),
-                brandService.getBrands({ status: "active" })
+                categoryService.getCategories({ status: "active", limit: 9999 }),
+                brandService.getBrands({ status: "active", limit: 9999 })
             ]);
 
             if (productRes.code === 200 || productRes.code === "success") {

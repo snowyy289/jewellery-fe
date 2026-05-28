@@ -6,6 +6,7 @@ import { Bell, User, LogOut, ChevronDown, Settings, Search, PanelLeftClose, Pane
 import Link from "next/link";
 import Image from "next/image";
 import { authService } from "@/services/admin/authService";
+import { notificationService, Notification } from "@/services/admin/notificationService";
 import { User as UserType } from "@/types/auth";
 import { useConfirm } from "@/hooks/useConfirm";
 
@@ -17,7 +18,6 @@ const PAGE_TITLES: Record<string, string> = {
   profile: "Trang Cá Nhân",
   suppliers: "Nhà Cung Cấp",
   "stock-imports": "Phiếu Nhập Kho",
-  "stock-exports": "Phiếu Xuất Kho",
   inventory: "Tồn Kho",
   banners: "Banner",
   "article-categories": "Danh Mục Bài Viết",
@@ -39,8 +39,11 @@ export default function AdminHeader({ isSidebarCollapsed, onToggleSidebar }: Adm
     const confirm = useConfirm();
     const [user, setUser] = useState<UserType | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [hasNotif] = useState(true);
+    const [isNotifOpen, setIsNotifOpen] = useState(false);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [unreadCount, setUnreadCount] = useState(0);
     const menuRef = useRef<HTMLDivElement>(null);
+    const notifRef = useRef<HTMLDivElement>(null);
     
     // Load user from localStorage after mount to avoid hydration mismatch
     useEffect(() => {
@@ -57,10 +60,55 @@ export default function AdminHeader({ isSidebarCollapsed, onToggleSidebar }: Adm
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setIsMenuOpen(false);
             }
+            if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+                setIsNotifOpen(false);
+            }
         };
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    const fetchNotifications = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+            const res = await notificationService.getNotifications({ limit: 10 });
+            if (res.code === 200) {
+                setNotifications(res.data);
+                setUnreadCount(res.unreadCount);
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải thông báo:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchNotifications();
+        const interval = setInterval(fetchNotifications, 15000); // Poll every 15s
+        return () => clearInterval(interval);
+    }, []);
+
+    const handleMarkAsRead = async (id: string, link: string) => {
+        try {
+            await notificationService.markAsRead(id);
+            await fetchNotifications();
+            if (link) {
+                router.push(link);
+                setIsNotifOpen(false);
+            }
+        } catch (error) {
+            console.error("Lỗi khi đánh dấu đã đọc:", error);
+        }
+    };
+
+    const handleMarkAllAsRead = async () => {
+        try {
+            await notificationService.markAllAsRead();
+            await fetchNotifications();
+        } catch (error) {
+            console.error("Lỗi khi đánh dấu tất cả đã đọc:", error);
+        }
+    };
 
     const handleLogout = async () => {
         confirm(
@@ -152,12 +200,71 @@ export default function AdminHeader({ isSidebarCollapsed, onToggleSidebar }: Adm
                 </button>
 
                 {/* Notification */}
-                <div className="relative">
-                    <button className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all duration-200 border border-slate-200/60">
+                <div className="relative" ref={notifRef}>
+                    <button 
+                        onClick={() => setIsNotifOpen(!isNotifOpen)}
+                        className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 border border-slate-200/60 ${isNotifOpen ? 'bg-slate-100 text-slate-800' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'}`}
+                    >
                         <Bell className="w-4 h-4" />
                     </button>
-                    {hasNotif && (
-                        <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full border-2 border-white" style={{ background: "#6366f1" }} />
+                    {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center text-[8px] font-bold text-white" style={{ background: "#ef4444" }}>
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                    )}
+
+                    {/* Notification Dropdown */}
+                    {isNotifOpen && (
+                        <div className="absolute top-full right-0 mt-2 w-80 rounded-2xl border overflow-hidden flex flex-col"
+                            style={{
+                                background: "rgba(255,255,255,0.98)",
+                                backdropFilter: "blur(20px)",
+                                borderColor: "rgba(226,232,240,0.8)",
+                                boxShadow: "0 20px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.03)",
+                                maxHeight: "80vh"
+                            }}>
+                            <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+                                <p className="text-sm font-bold text-slate-800">Thông báo</p>
+                                {unreadCount > 0 && (
+                                    <button 
+                                        onClick={handleMarkAllAsRead}
+                                        className="text-[10px] font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
+                                    >
+                                        Đánh dấu đã đọc tất cả
+                                    </button>
+                                )}
+                            </div>
+                            <div className="overflow-y-auto" style={{ maxHeight: "calc(80vh - 50px)" }}>
+                                {notifications.length === 0 ? (
+                                    <div className="p-8 text-center">
+                                        <p className="text-sm text-slate-400">Không có thông báo nào</p>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col">
+                                        {notifications.map((notif) => (
+                                            <button
+                                                key={notif._id}
+                                                onClick={() => handleMarkAsRead(notif._id, notif.link)}
+                                                className={`p-4 text-left border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors relative ${!notif.isRead ? 'bg-indigo-50/30' : ''}`}
+                                            >
+                                                {!notif.isRead && (
+                                                    <span className="absolute top-4 right-4 w-2 h-2 rounded-full bg-indigo-500" />
+                                                )}
+                                                <p className={`text-sm ${!notif.isRead ? 'font-bold text-slate-800' : 'font-medium text-slate-700'}`}>
+                                                    {notif.title}
+                                                </p>
+                                                <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                                                    {notif.message}
+                                                </p>
+                                                <p className="text-[10px] text-slate-400 mt-2">
+                                                    {new Date(notif.createdAt).toLocaleString('vi-VN')}
+                                                </p>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     )}
                 </div>
 

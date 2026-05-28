@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Package, Eye, Download } from "lucide-react";
 import Button from "@/components/button/Button";
 import { AdminPageHeader, AdminCard } from "@/components/layouts/admin/shared";
@@ -30,6 +30,7 @@ interface Order {
 
 function OrdersContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [pagination, setPagination] = useState({
@@ -232,7 +233,11 @@ function OrdersContent() {
                 </tr>
               ) : (
                 orders.map((order) => (
-                  <tr key={order._id} className="group hover:bg-indigo-50/30 transition-all duration-300">
+                  <tr 
+                    key={order._id} 
+                    className="group hover:bg-indigo-50/30 transition-all duration-300 cursor-pointer"
+                    onClick={() => router.push(`/admin/orders/${order._id}`)}
+                  >
                     <td className="px-8 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
@@ -275,7 +280,7 @@ function OrdersContent() {
                         </span>
                       </div>
                     </td>
-                    <td className="px-8 py-4">
+                    <td className="px-8 py-4" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity">
                         <Link href={`/admin/orders/${order._id}`}>
                           <button className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:bg-white hover:text-indigo-600 hover:shadow-md border border-transparent hover:border-slate-100 transition-all">

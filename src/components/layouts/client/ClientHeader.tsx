@@ -2,13 +2,20 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Search, User, Menu, X, Diamond, Phone, MapPin } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import CartIcon from "@/components/cart/CartIcon";
+import WishlistIcon from "@/components/wishlist/WishlistIcon";
+import { useAuth } from "@/contexts/AuthContext";
+import { LogOut, ChevronDown } from "lucide-react";
 
 export default function ClientHeader() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const [headerSearch, setHeaderSearch] = useState("");
     const pathname = usePathname();
+    const router = useRouter();
+    const { isAuthenticated, user, logout } = useAuth();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -24,8 +31,15 @@ export default function ClientHeader() {
         { name: "Bộ Sưu Tập", href: "/collections" },
         { name: "Cẩm Nang", href: "/blog" },
         { name: "Đơn Hàng", href: "/orders" },
-        { name: "Liên Hệ", href: "/contact" },
+        { name: "Liên Hệ", href: "/#contact" },
     ];
+
+    const handleHeaderSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (headerSearch.trim()) {
+            router.push(`/products?keyword=${encodeURIComponent(headerSearch.trim())}`);
+        }
+    };
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50">
@@ -93,20 +107,73 @@ export default function ClientHeader() {
 
                         {/* Actions - Clean Icons */}
                         <div className="flex items-center gap-4 md:gap-7">
-                            <div className="hidden md:flex items-center bg-stone-50 rounded-full px-4 py-2 border border-stone-100 group focus-within:border-gold transition-all">
-                                <Search className="w-4 h-4 text-stone-400 group-hover:text-gold transition-colors" />
+                            <form onSubmit={handleHeaderSearch} className="hidden md:flex items-center bg-stone-50 rounded-full px-4 py-2 border border-stone-100 group focus-within:border-gold transition-all">
+                                <button type="submit">
+                                    <Search className="w-4 h-4 text-stone-400 group-hover:text-gold transition-colors" />
+                                </button>
                                 <input 
                                     type="text" 
+                                    value={headerSearch}
+                                    onChange={(e) => setHeaderSearch(e.target.value)}
                                     placeholder="Tìm kiếm..." 
                                     className="bg-transparent border-none focus:outline-none text-xs ml-2 w-32 placeholder:text-stone-300"
                                 />
-                            </div>
+                            </form>
                             
-                            <div className="flex items-center gap-4">
-                                <Link href="/login" className="text-stone-600 hover:text-gold transition-colors">
-                                    <User className="w-5 h-5" />
-                                </Link>
-                                <div className="text-stone-600 hover:text-gold transition-colors p-2 bg-stone-50 rounded-full border border-stone-100">
+                            <div className="flex items-center gap-4 relative">
+                                {isAuthenticated ? (
+                                    <div className="relative">
+                                        <button 
+                                            onClick={() => setUserMenuOpen(!userMenuOpen)}
+                                            className="flex items-center gap-2 text-stone-600 hover:text-gold transition-colors text-xs font-bold uppercase tracking-widest"
+                                        >
+                                            <User className="w-5 h-5" />
+                                            <span className="hidden md:inline-block max-w-[100px] truncate">{user?.fullName}</span>
+                                            <ChevronDown className="w-3 h-3" />
+                                        </button>
+
+                                        {userMenuOpen && (
+                                            <div className="absolute right-0 mt-4 w-48 bg-white border border-stone-100 shadow-xl rounded-lg py-2 flex flex-col z-50 animate-in fade-in zoom-in-95 duration-200">
+                                                <div className="px-4 py-2 border-b border-stone-50 mb-2">
+                                                    <p className="text-[10px] text-stone-400 uppercase tracking-widest">Tài khoản</p>
+                                                    <p className="text-xs font-bold text-stone-900 truncate">{user?.email}</p>
+                                                </div>
+                                                <Link 
+                                                    href="/profile" 
+                                                    className="px-4 py-2 text-xs font-bold text-stone-600 hover:text-gold hover:bg-stone-50 transition-colors"
+                                                    onClick={() => setUserMenuOpen(false)}
+                                                >
+                                                    Hồ Sơ Của Tôi
+                                                </Link>
+                                                <Link 
+                                                    href="/orders" 
+                                                    className="px-4 py-2 text-xs font-bold text-stone-600 hover:text-gold hover:bg-stone-50 transition-colors"
+                                                    onClick={() => setUserMenuOpen(false)}
+                                                >
+                                                    Đơn Hàng
+                                                </Link>
+                                                <button 
+                                                    onClick={() => {
+                                                        if (window.confirm("Bạn có chắc chắn muốn đăng xuất?")) {
+                                                            logout();
+                                                            setUserMenuOpen(false);
+                                                        }
+                                                    }}
+                                                    className="px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-50 transition-colors text-left flex items-center gap-2 mt-2 border-t border-stone-50"
+                                                >
+                                                    <LogOut className="w-3 h-3" />
+                                                    Đăng Xuất
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <Link href="/login" className="text-stone-600 hover:text-gold transition-colors">
+                                        <User className="w-5 h-5" />
+                                    </Link>
+                                )}
+                                <div className="text-stone-600 hover:text-gold transition-colors p-2 bg-stone-50 rounded-full border border-stone-100 flex items-center">
+                                    <WishlistIcon />
                                     <CartIcon />
                                 </div>
                             </div>

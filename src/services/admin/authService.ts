@@ -11,9 +11,7 @@ export const authService = {
       console.log("🌐 [API] Response code:", response.data.code, "Type:", typeof response.data.code);
       return response.data;
     } catch (error: any) {
-      console.error("🌐 [API] Login API error:", error);
-      console.error("🌐 [API] Error response:", error.response?.data);
-      console.error("🌐 [API] Error status:", error.response?.status);
+      console.log("🌐 [API] Login API error:", error.response?.data?.message || error.message);
       throw error;
     }
   },
