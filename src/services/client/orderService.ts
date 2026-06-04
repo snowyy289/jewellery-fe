@@ -34,6 +34,12 @@ export const orderService = {
     return response.data;
   },
 
+  // Return order
+  returnOrder: async (orderCode: string, data: { reason: string }): Promise<OrderResponse> => {
+    const response = await axiosInstance.post(`/client/orders/${orderCode}/return`, data);
+    return response.data;
+  },
+
   // Track order (public endpoint - no auth required)
   trackOrder: async (orderCode: string): Promise<TrackingResponse> => {
     const response = await axiosInstance.get(`/client/orders/${orderCode}/track`);

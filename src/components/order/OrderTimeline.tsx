@@ -12,6 +12,9 @@ const statusConfig: Record<OrderStatus, { label: string; icon: React.ElementType
   processing: { label: "Đang xử lý", icon: CheckCircleIcon },
   shipping: { label: "Đang giao hàng", icon: CheckCircleIcon },
   delivered: { label: "Đã giao hàng", icon: CheckCircleIcon },
+  return_requested: { label: "Yêu cầu hoàn trả", icon: ClockIcon },
+  return_approved: { label: "Chờ nhận hàng hoàn", icon: ClockIcon },
+  returned: { label: "Đã hoàn trả", icon: CheckCircleIcon },
   cancelled: { label: "Đã hủy", icon: XCircleIcon },
   refunded: { label: "Đã hoàn tiền", icon: CheckCircleIcon }
 };

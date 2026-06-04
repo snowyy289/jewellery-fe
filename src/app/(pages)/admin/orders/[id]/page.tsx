@@ -22,6 +22,7 @@ interface Order {
   tracking_number?: string;
   estimated_delivery?: string;
   admin_note?: string;
+  return_reason?: string;
   shipping_address: {
     full_name: string;
     phone: string;
@@ -161,6 +162,9 @@ export default function OrderDetailPage() {
       processing: { bg: 'bg-purple-50', text: 'text-purple-600', label: 'Đang xử lý', dot: 'bg-purple-500' },
       shipping: { bg: 'bg-indigo-50', text: 'text-indigo-600', label: 'Đang giao', dot: 'bg-indigo-500' },
       delivered: { bg: 'bg-emerald-50', text: 'text-emerald-600', label: 'Đã giao', dot: 'bg-emerald-500' },
+      return_requested: { bg: 'bg-orange-50', text: 'text-orange-600', label: 'Yêu cầu hoàn trả', dot: 'bg-orange-500' },
+      return_approved: { bg: 'bg-teal-50', text: 'text-teal-600', label: 'Chờ nhận hàng', dot: 'bg-teal-500' },
+      returned: { bg: 'bg-slate-100', text: 'text-slate-600', label: 'Đã hoàn trả', dot: 'bg-slate-500' },
       cancelled: { bg: 'bg-rose-50', text: 'text-rose-600', label: 'Đã hủy', dot: 'bg-rose-500' }
     };
     const badge = badges[status] || badges.pending;
@@ -240,6 +244,13 @@ export default function OrderDetailPage() {
                   </div>
                 )}
               </div>
+
+              {order.return_reason && (
+                <div className="mt-6 p-4 rounded-xl bg-orange-50 border border-orange-100">
+                  <p className="text-xs text-orange-600 font-bold uppercase tracking-wider mb-2">Lý do hoàn trả từ khách hàng</p>
+                  <p className="text-sm font-medium text-orange-800">{order.return_reason}</p>
+                </div>
+              )}
             </div>
           </AdminCard>
 
@@ -334,6 +345,9 @@ export default function OrderDetailPage() {
                   <option value="processing">Đang xử lý</option>
                   <option value="shipping">Đang giao</option>
                   <option value="delivered">Đã giao</option>
+                  <option value="return_requested">Yêu cầu hoàn trả</option>
+                  <option value="return_approved">Chờ nhận hàng hoàn</option>
+                  <option value="returned">Đã nhận hàng & Hoàn trả</option>
                   <option value="cancelled">Đã hủy</option>
                 </select>
               </div>

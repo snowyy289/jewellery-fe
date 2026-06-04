@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem("client_token");
     localStorage.removeItem("client_user");
     localStorage.removeItem("cart_session_id");
+    localStorage.removeItem("chat_session_id");
     window.location.href = "/login";
   };
 

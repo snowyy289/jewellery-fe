@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { ShoppingBagIcon } from "@heroicons/react/24/outline";
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderCode = searchParams.get('order');
@@ -62,10 +62,10 @@ export default function PaymentSuccessPage() {
             </Link>
 
             <Link
-              href="/products"
+              href="/"
               className="block w-full text-blue-600 py-3 px-4 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
             >
-              Tiếp tục mua sắm
+              Quay lại trang chủ
             </Link>
           </div>
 
@@ -82,5 +82,13 @@ export default function PaymentSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>}>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }

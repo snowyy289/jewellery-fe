@@ -31,7 +31,7 @@ export interface StatusHistory {
   changed_at: string;
 }
 
-export type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipping' | 'delivered' | 'cancelled' | 'refunded';
+export type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipping' | 'delivered' | 'return_requested' | 'return_approved' | 'returned' | 'cancelled' | 'refunded';
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 export type PaymentMethod = 'cod' | 'vnpay' | 'momo' | 'zalopay';
 
@@ -58,6 +58,7 @@ export interface Order {
   customer_note?: string;
   admin_note?: string;
   cancellation_reason?: string;
+  return_reason?: string;
   stock_reserved: boolean;
   stock_released: boolean;
   createdAt: string;

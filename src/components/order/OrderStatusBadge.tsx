@@ -13,6 +13,9 @@ const statusConfig: Record<OrderStatus, { label: string; color: string }> = {
   shipping: { label: "Đang giao hàng", color: "bg-indigo-100 text-indigo-800" },
   delivered: { label: "Đã giao hàng", color: "bg-green-100 text-green-800" },
   cancelled: { label: "Đã hủy", color: "bg-red-100 text-red-800" },
+  return_requested: { label: "Yêu cầu hoàn trả", color: "bg-orange-100 text-orange-800" },
+  return_approved: { label: "Chờ nhận hàng hoàn", color: "bg-teal-100 text-teal-800" },
+  returned: { label: "Đã hoàn trả", color: "bg-gray-200 text-gray-800" },
   refunded: { label: "Đã hoàn tiền", color: "bg-gray-100 text-gray-800" }
 };
 

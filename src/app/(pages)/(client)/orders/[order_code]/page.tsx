@@ -32,6 +32,9 @@ export default function OrderDetailPage() {
   const [cancelling, setCancelling] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
+  const [returning, setReturning] = useState(false);
+  const [showReturnModal, setShowReturnModal] = useState(false);
+  const [returnReason, setReturnReason] = useState('');
   const [payingNow, setPayingNow] = useState(false);
   const [showPaymentNotification, setShowPaymentNotification] = useState(false);
 
@@ -79,6 +82,28 @@ export default function OrderDetailPage() {
     }
   };
 
+  const handleReturnOrder = async () => {
+    try {
+      if (!returnReason.trim()) {
+        alert('Vui lòng nhập lý do hoàn trả');
+        return;
+      }
+      setReturning(true);
+      await orderService.returnOrder(orderCode, { reason: returnReason });
+      setShowReturnModal(false);
+      setReturnReason('');
+      alert('Yêu cầu hoàn trả thành công!');
+      // Refresh order data
+      await fetchOrder();
+    } catch (err: unknown) {
+      console.error('Error returning order:', err);
+      const error = err as { response?: { data?: { message?: string } } };
+      alert(error.response?.data?.message || 'Không thể gửi yêu cầu hoàn trả');
+    } finally {
+      setReturning(false);
+    }
+  };
+
   const handlePayNow = async () => {
     if (!order) return;
 
@@ -107,6 +132,7 @@ export default function OrderDetailPage() {
   };
 
   const canCancelOrder = order && ['pending', 'confirmed', 'processing'].includes(order.status);
+  const canReturnOrder = order && order.status === 'delivered';
   const canPayNow = order && order.payment_status === 'pending' && order.payment_method !== 'cod' && order.status !== 'cancelled';
 
   const paymentMethodLabels: Record<string, string> = {
@@ -393,6 +419,16 @@ export default function OrderDetailPage() {
                 Hủy đơn hàng
               </button>
             )}
+
+            {/* Return Order Button */}
+            {canReturnOrder && (
+              <button
+                onClick={() => setShowReturnModal(true)}
+                className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+              >
+                Yêu cầu hoàn trả
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -429,6 +465,44 @@ export default function OrderDetailPage() {
                 className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {cancelling ? 'Đang xử lý...' : 'Xác nhận hủy'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Return Order Modal */}
+      {showReturnModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Yêu cầu hoàn trả</h3>
+            <p className="text-gray-600 mb-4">
+              Vui lòng cung cấp lý do bạn muốn hoàn trả đơn hàng này. Yêu cầu của bạn sẽ được xem xét.
+            </p>
+            <textarea
+              value={returnReason}
+              onChange={(e) => setReturnReason(e.target.value)}
+              rows={4}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
+              placeholder="Nhập lý do hoàn trả (bắt buộc)..."
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowReturnModal(false);
+                  setReturnReason('');
+                }}
+                disabled={returning}
+                className="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg font-semibold hover:bg-gray-300 disabled:opacity-50 transition-colors"
+              >
+                Đóng
+              </button>
+              <button
+                onClick={handleReturnOrder}
+                disabled={returning || !returnReason.trim()}
+                className="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {returning ? 'Đang xử lý...' : 'Gửi yêu cầu'}
               </button>
             </div>
           </div>

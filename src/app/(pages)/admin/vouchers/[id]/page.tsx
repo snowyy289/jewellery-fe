@@ -65,10 +65,8 @@ export default function VoucherDetailPage() {
             <AdminPageHeader
                 title="Chi tiết mã giảm giá"
                 subTitle={`Thông tin mã ${formData.code}`}
-                breadcrumbs={[
-                    { label: "Mã giảm giá", href: "/admin/vouchers" },
-                    { label: "Chi tiết" }
-                ]}
+                backHref="/admin/vouchers"
+                backLabel="Danh sách mã giảm giá"
             />
 
             <form onSubmit={(e) => e.preventDefault()} className="pointer-events-none opacity-90 select-none [&_button[type=submit]]:hidden">
@@ -228,7 +226,7 @@ export default function VoucherDetailPage() {
                 <div className="mt-8 flex justify-end gap-3">
                     <Button 
                         type="button" 
-                        variant="secondary"
+                        variant="outline"
                         onClick={() => router.push("/admin/vouchers")}
                         className="pointer-events-auto"
                     >

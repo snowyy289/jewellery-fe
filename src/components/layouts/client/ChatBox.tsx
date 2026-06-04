@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Diamond } from "lucide-react";
 import { io, Socket } from "socket.io-client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Message {
   text: string;
@@ -10,6 +11,7 @@ interface Message {
 }
 
 export default function ChatBox() {
+    const { user } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
         { text: "Chào bạn! Jewelry Eco có thể giúp gì cho bạn hôm nay?", sender: 'bot', time: new Date() }
@@ -35,11 +37,16 @@ export default function ChatBox() {
 
     // Initialize Socket and Session
     useEffect(() => {
-        // Generate or get session ID
-        let currentSessionId = localStorage.getItem("chat_session_id");
-        if (!currentSessionId) {
-            currentSessionId = "guest_" + Math.random().toString(36).substring(2, 15);
-            localStorage.setItem("chat_session_id", currentSessionId);
+        // Generate or get session ID based on auth status
+        let currentSessionId = "";
+        if (user?._id) {
+            currentSessionId = user._id;
+        } else {
+            currentSessionId = localStorage.getItem("chat_session_id") || "";
+            if (!currentSessionId) {
+                currentSessionId = "guest_" + Math.random().toString(36).substring(2, 15);
+                localStorage.setItem("chat_session_id", currentSessionId);
+            }
         }
         setSessionId(currentSessionId);
 
@@ -52,13 +59,17 @@ export default function ChatBox() {
         });
 
         newSocket.on("chat_history", (history: any[]) => {
-            if (history.length > 0) {
-                const formattedMessages = history.map(msg => ({
+            if (history && history.length > 0) {
+                const formattedMessages: Message[] = history.map(msg => ({
                     text: msg.text,
                     sender: msg.sender_type === 'client' ? 'user' : 'bot',
                     time: new Date(msg.createdAt)
                 }));
                 setMessages(formattedMessages);
+            } else {
+                setMessages([
+                    { text: "Chào bạn! Jewelry Eco có thể giúp gì cho bạn hôm nay?", sender: 'bot', time: new Date() }
+                ]);
             }
         });
 
@@ -78,7 +89,7 @@ export default function ChatBox() {
         return () => {
             newSocket.disconnect();
         };
-    }, []);
+    }, [user?._id]);
 
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault();
@@ -100,6 +111,56 @@ export default function ChatBox() {
 
     const formatTime = (date: Date) => {
         return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+    };
+
+    const renderMessage = (text: string) => {
+        const tokenRegex = /(!?)\[([^\]]+)\]\(([^)]+)\)/g;
+        const parts = [];
+        let lastIndex = 0;
+        let match;
+        
+        while ((match = tokenRegex.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                parts.push(text.substring(lastIndex, match.index));
+            }
+            
+            const isImage = match[1] === '!';
+            const altText = match[2];
+            const url = match[3];
+            
+            if (isImage) {
+                parts.push(
+                    <img key={match.index} src={url} alt={altText} className="w-full max-w-[200px] rounded-lg object-cover my-2 shadow-sm border border-stone-100" />
+                );
+            } else {
+                parts.push(
+                    <a key={match.index} href={url} target="_blank" rel="noopener noreferrer" className="text-gold hover:text-yellow-600 underline underline-offset-2 font-medium">
+                        {altText}
+                    </a>
+                );
+            }
+            lastIndex = tokenRegex.lastIndex;
+        }
+        
+        if (lastIndex < text.length) {
+            parts.push(text.substring(lastIndex));
+        }
+        
+        return parts.map((part, i) => {
+            if (typeof part === 'string') {
+                return (
+                    <span key={i}>
+                        {part.split('\n').map((line, j, arr) => (
+                            <span key={j}>
+                                {line}
+                                {j < arr.length - 1 && <br/>}
+                            </span>
+                        ))}
+                    </span>
+                );
+            }
+            return part;
+        });
     };
 
     return (
@@ -135,7 +196,7 @@ export default function ChatBox() {
                         {messages.map((msg, idx) => (
                             <div key={idx} className={`flex flex-col max-w-[80%] ${msg.sender === 'user' ? 'self-end items-end' : 'self-start items-start'}`}>
                                 <div className={`p-3 rounded-2xl text-sm ${msg.sender === 'user' ? 'bg-stone-900 text-white rounded-tr-sm' : 'bg-white border border-stone-200 text-stone-800 rounded-tl-sm shadow-sm'}`}>
-                                    {msg.text}
+                                    {renderMessage(msg.text)}
                                 </div>
                                 <span className="text-[10px] text-stone-400 mt-1">{formatTime(msg.time)}</span>
                             </div>
